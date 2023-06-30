@@ -1,0 +1,156 @@
+---
+title: "r batch install and load packages"
+date: 2022-03-31
+author: "***Qianjiang Hu***"
+output: 
+  html_document:
+      number_sections: false
+      toc: true
+      toc_depth: 4
+      toc_float:
+        collapsed: true
+        smooth_scroll: true
+---
+
+## **General installation methods**
+- CRAN Mirror 
+
+|        `install.packages('package_name')`
+|        - `repo = "https://lib.ugent.be/CRAN/"` to indicate respiratory
+|        - `dependencies = TRUE` install all of the dependencies
+|        > `getCRANmirrors()` show available mirrors
+|            
+| 
+    
+- BiocManager 
+
+|        `if (!requireNamespace("BiocManager")) {install.packages("BiocManager")}` 
+
+|        `BiocManager::install('package_name')` 
+|          
+| 
+ 
+- devtools after `install.packages("devtools"`) 
+
+|        - `install_bioc()` from Bioconductor,
+|        - `install_bitbucket()` from Bitbucket,
+|        - `install_cran()` from CRAN,
+|        - `install_git()` from a git repository,
+|        - `install_github()` from GitHub,
+|        - `install_local()` from a local file,
+|        - `install_svn()` from a SVN repository,
+|        - `install_url() `from a URL, and
+|        - `install_version()` from a specific version of a CRAN package.
+|        - e.g. `devtools::install_github("packages")`
+|          
+| 
+ 
+## **General methods to load packages**
+
+- library 
+
+|        `library('package_name')`
+|            
+| 
+
+- require 
+
+|        `require('package_name')`
+|            
+| 
+
+- call function via `::`  
+
+|        `package::function()`
+|         - `::` is quite helpful if there are namespace collisions; e.g. functions from different packages with the same name.
+| 
+
+## **Install multiple packages**
+
+
+```{r, echo=TRUE, eval= FALSE}
+rm(list=ls()) # clean r space and objects
+```
+
+
+```{r, echo=TRUE, eval= FALSE}
+list_of_packages <- c('DESeq2',
+                      'ggplot2',
+                      'ggfortify',
+                      'biomaRt',
+                     'org.Mm.eg.db',
+                      'tidyverse',
+                      'ComplexHeatmap',
+                      'cowplot',
+                      'circlize',
+                      'RColorBrewer',
+                     'clusterProfiler',
+                     'enrichplot',
+                      'msigdbr',
+                     'DOSE',
+                     'dplyr',
+                    'EnhancedVolcano',
+                     'pathview',
+                     'fgsea',
+                    'ggnewscale'
+                     )
+
+new_packages <- list_of_packages[!(list_of_packages %in% installed.packages()[,'Package'])]
+
+if(length(new_packages) >0) BiocManager::install(new_packages, dependencies=TRUE)
+
+```
+
+
+## **Load multiple packages**
+
+
+```{r, echo=TRUE, eval= FALSE}
+
+sapply(list_of_packages, library, character.only = T)
+
+```
+
+
+## **Set working directory**
+```{r, echo=TRUE, eval=FALSE}
+
+getwd()
+here::here() # get current working folder path or the path of specific files
+
+### e.g. Set your working directory
+here::here()
+cm_dir <- here::here('count_matrix')
+rs_dir <- here::here('results')
+pl_dir <- here::here('plots')
+sp_dir <- here::here('scripts')
+me_dir <- here::here('metadata')
+
+
+### get file path and sample ID
+
+files <- dir('count_matrix', pattern = "*.count")   # get all file path with the suffix of '.count' under the folder of 'count_matrix'
+file_ID <- unlist(strsplit(files, split = '.count'))   # extract the file name and set as sample ID
+file_ID <- gsub(pattern = '.count', replacement = '', files) ## alternative; grep the files names and replace the '.count' as ''.
+## sub() and gsub(): The functions which are exclusively useful for string substitution operations in R. You can replace the string in a vector or a data frame and can substitute the specified string.
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,1612 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><title>Alignment and mapping workflow</title><style>
+/* cspell:disable-file */
+/* webkit printing magic: print all background colors */
+html {
+	-webkit-print-color-adjust: exact;
+}
+* {
+	box-sizing: border-box;
+	-webkit-print-color-adjust: exact;
+}
+
+html,
+body {
+	margin: 0;
+	padding: 0;
+}
+@media only screen {
+	body {
+		margin: 2em auto;
+		max-width: 900px;
+		color: rgb(55, 53, 47);
+	}
+}
+
+body {
+	line-height: 1.5;
+	white-space: pre-wrap;
+}
+
+a,
+a.visited {
+	color: inherit;
+	text-decoration: underline;
+}
+
+.pdf-relative-link-path {
+	font-size: 80%;
+	color: #444;
+}
+
+h1,
+h2,
+h3 {
+	letter-spacing: -0.01em;
+	line-height: 1.2;
+	font-weight: 600;
+	margin-bottom: 0;
+}
+
+.page-title {
+	font-size: 2.5rem;
+	font-weight: 700;
+	margin-top: 0;
+	margin-bottom: 0.75em;
+}
+
+h1 {
+	font-size: 1.875rem;
+	margin-top: 1.875rem;
+}
+
+h2 {
+	font-size: 1.5rem;
+	margin-top: 1.5rem;
+}
+
+h3 {
+	font-size: 1.25rem;
+	margin-top: 1.25rem;
+}
+
+.source {
+	border: 1px solid #ddd;
+	border-radius: 3px;
+	padding: 1.5em;
+	word-break: break-all;
+}
+
+.callout {
+	border-radius: 3px;
+	padding: 1rem;
+}
+
+figure {
+	margin: 1.25em 0;
+	page-break-inside: avoid;
+}
+
+figcaption {
+	opacity: 0.5;
+	font-size: 85%;
+	margin-top: 0.5em;
+}
+
+mark {
+	background-color: transparent;
+}
+
+.indented {
+	padding-left: 1.5em;
+}
+
+hr {
+	background: transparent;
+	display: block;
+	width: 100%;
+	height: 1px;
+	visibility: visible;
+	border: none;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.09);
+}
+
+img {
+	max-width: 100%;
+}
+
+@media only print {
+	img {
+		max-height: 100vh;
+		object-fit: contain;
+	}
+}
+
+@page {
+	margin: 1in;
+}
+
+.collection-content {
+	font-size: 0.875rem;
+}
+
+.column-list {
+	display: flex;
+	justify-content: space-between;
+}
+
+.column {
+	padding: 0 1em;
+}
+
+.column:first-child {
+	padding-left: 0;
+}
+
+.column:last-child {
+	padding-right: 0;
+}
+
+.table_of_contents-item {
+	display: block;
+	font-size: 0.875rem;
+	line-height: 1.3;
+	padding: 0.125rem;
+}
+
+.table_of_contents-indent-1 {
+	margin-left: 1.5rem;
+}
+
+.table_of_contents-indent-2 {
+	margin-left: 3rem;
+}
+
+.table_of_contents-indent-3 {
+	margin-left: 4.5rem;
+}
+
+.table_of_contents-link {
+	text-decoration: none;
+	opacity: 0.7;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.18);
+}
+
+table,
+th,
+td {
+	border: 1px solid rgba(55, 53, 47, 0.09);
+	border-collapse: collapse;
+}
+
+table {
+	border-left: none;
+	border-right: none;
+}
+
+th,
+td {
+	font-weight: normal;
+	padding: 0.25em 0.5em;
+	line-height: 1.5;
+	min-height: 1.5em;
+	text-align: left;
+}
+
+th {
+	color: rgba(55, 53, 47, 0.6);
+}
+
+ol,
+ul {
+	margin: 0;
+	margin-block-start: 0.6em;
+	margin-block-end: 0.6em;
+}
+
+li > ol:first-child,
+li > ul:first-child {
+	margin-block-start: 0.6em;
+}
+
+ul > li {
+	list-style: disc;
+}
+
+ul.to-do-list {
+	padding-inline-start: 0;
+}
+
+ul.to-do-list > li {
+	list-style: none;
+}
+
+.to-do-children-checked {
+	text-decoration: line-through;
+	opacity: 0.375;
+}
+
+ul.toggle > li {
+	list-style: none;
+}
+
+ul {
+	padding-inline-start: 1.7em;
+}
+
+ul > li {
+	padding-left: 0.1em;
+}
+
+ol {
+	padding-inline-start: 1.6em;
+}
+
+ol > li {
+	padding-left: 0.2em;
+}
+
+.mono ol {
+	padding-inline-start: 2em;
+}
+
+.mono ol > li {
+	text-indent: -0.4em;
+}
+
+.toggle {
+	padding-inline-start: 0em;
+	list-style-type: none;
+}
+
+/* Indent toggle children */
+.toggle > li > details {
+	padding-left: 1.7em;
+}
+
+.toggle > li > details > summary {
+	margin-left: -1.1em;
+}
+
+.selected-value {
+	display: inline-block;
+	padding: 0 0.5em;
+	background: rgba(206, 205, 202, 0.5);
+	border-radius: 3px;
+	margin-right: 0.5em;
+	margin-top: 0.3em;
+	margin-bottom: 0.3em;
+	white-space: nowrap;
+}
+
+.collection-title {
+	display: inline-block;
+	margin-right: 1em;
+}
+
+.page-description {
+    margin-bottom: 2em;
+}
+
+.simple-table {
+	margin-top: 1em;
+	font-size: 0.875rem;
+	empty-cells: show;
+}
+.simple-table td {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table th {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table-header-color {
+	background: rgb(247, 246, 243);
+	color: black;
+}
+.simple-table-header {
+	font-weight: 500;
+}
+
+time {
+	opacity: 0.5;
+}
+
+.icon {
+	display: inline-block;
+	max-width: 1.2em;
+	max-height: 1.2em;
+	text-decoration: none;
+	vertical-align: text-bottom;
+	margin-right: 0.5em;
+}
+
+img.icon {
+	border-radius: 3px;
+}
+
+.user-icon {
+	width: 1.5em;
+	height: 1.5em;
+	border-radius: 100%;
+	margin-right: 0.5rem;
+}
+
+.user-icon-inner {
+	font-size: 0.8em;
+}
+
+.text-icon {
+	border: 1px solid #000;
+	text-align: center;
+}
+
+.page-cover-image {
+	display: block;
+	object-fit: cover;
+	width: 100%;
+	max-height: 30vh;
+}
+
+.page-header-icon {
+	font-size: 3rem;
+	margin-bottom: 1rem;
+}
+
+.page-header-icon-with-cover {
+	margin-top: -0.72em;
+	margin-left: 0.07em;
+}
+
+.page-header-icon img {
+	border-radius: 3px;
+}
+
+.link-to-page {
+	margin: 1em 0;
+	padding: 0;
+	border: none;
+	font-weight: 500;
+}
+
+p > .user {
+	opacity: 0.5;
+}
+
+td > .user,
+td > time {
+	white-space: nowrap;
+}
+
+input[type="checkbox"] {
+	transform: scale(1.5);
+	margin-right: 0.6em;
+	vertical-align: middle;
+}
+
+p {
+	margin-top: 0.5em;
+	margin-bottom: 0.5em;
+}
+
+.image {
+	border: none;
+	margin: 1.5em 0;
+	padding: 0;
+	border-radius: 0;
+	text-align: center;
+}
+
+.code,
+code {
+	background: rgba(135, 131, 120, 0.15);
+	border-radius: 3px;
+	padding: 0.2em 0.4em;
+	border-radius: 3px;
+	font-size: 85%;
+	tab-size: 2;
+}
+
+code {
+	color: #eb5757;
+}
+
+.code {
+	padding: 1.5em 1em;
+}
+
+.code-wrap {
+	white-space: pre-wrap;
+	word-break: break-all;
+}
+
+.code > code {
+	background: none;
+	padding: 0;
+	font-size: 100%;
+	color: inherit;
+}
+
+blockquote {
+	font-size: 1.25em;
+	margin: 1em 0;
+	padding-left: 1em;
+	border-left: 3px solid rgb(55, 53, 47);
+}
+
+.bookmark {
+	text-decoration: none;
+	max-height: 8em;
+	padding: 0;
+	display: flex;
+	width: 100%;
+	align-items: stretch;
+}
+
+.bookmark-title {
+	font-size: 0.85em;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	height: 1.75em;
+	white-space: nowrap;
+}
+
+.bookmark-text {
+	display: flex;
+	flex-direction: column;
+}
+
+.bookmark-info {
+	flex: 4 1 180px;
+	padding: 12px 14px 14px;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+.bookmark-image {
+	width: 33%;
+	flex: 1 1 180px;
+	display: block;
+	position: relative;
+	object-fit: cover;
+	border-radius: 1px;
+}
+
+.bookmark-description {
+	color: rgba(55, 53, 47, 0.6);
+	font-size: 0.75em;
+	overflow: hidden;
+	max-height: 4.5em;
+	word-break: break-word;
+}
+
+.bookmark-href {
+	font-size: 0.75em;
+	margin-top: 0.25em;
+}
+
+.sans { font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol"; }
+.code { font-family: "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace; }
+.serif { font-family: Lyon-Text, Georgia, ui-serif, serif; }
+.mono { font-family: iawriter-mono, Nitti, Menlo, Courier, monospace; }
+.pdf .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK JP'; }
+.pdf:lang(zh-CN) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK SC'; }
+.pdf:lang(zh-TW) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK TC'; }
+.pdf:lang(ko-KR) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK KR'; }
+.pdf .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.pdf .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK JP'; }
+.pdf:lang(zh-CN) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK SC'; }
+.pdf:lang(zh-TW) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK TC'; }
+.pdf:lang(ko-KR) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK KR'; }
+.pdf .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.highlight-default {
+	color: rgba(55, 53, 47, 1);
+}
+.highlight-gray {
+	color: rgba(120, 119, 116, 1);
+	fill: rgba(120, 119, 116, 1);
+}
+.highlight-brown {
+	color: rgba(159, 107, 83, 1);
+	fill: rgba(159, 107, 83, 1);
+}
+.highlight-orange {
+	color: rgba(217, 115, 13, 1);
+	fill: rgba(217, 115, 13, 1);
+}
+.highlight-yellow {
+	color: rgba(203, 145, 47, 1);
+	fill: rgba(203, 145, 47, 1);
+}
+.highlight-teal {
+	color: rgba(68, 131, 97, 1);
+	fill: rgba(68, 131, 97, 1);
+}
+.highlight-blue {
+	color: rgba(51, 126, 169, 1);
+	fill: rgba(51, 126, 169, 1);
+}
+.highlight-purple {
+	color: rgba(144, 101, 176, 1);
+	fill: rgba(144, 101, 176, 1);
+}
+.highlight-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.highlight-red {
+	color: rgba(212, 76, 71, 1);
+	fill: rgba(212, 76, 71, 1);
+}
+.highlight-gray_background {
+	background: rgba(241, 241, 239, 1);
+}
+.highlight-brown_background {
+	background: rgba(244, 238, 238, 1);
+}
+.highlight-orange_background {
+	background: rgba(251, 236, 221, 1);
+}
+.highlight-yellow_background {
+	background: rgba(251, 243, 219, 1);
+}
+.highlight-teal_background {
+	background: rgba(237, 243, 236, 1);
+}
+.highlight-blue_background {
+	background: rgba(231, 243, 248, 1);
+}
+.highlight-purple_background {
+	background: rgba(244, 240, 247, 0.8);
+}
+.highlight-pink_background {
+	background: rgba(249, 238, 243, 0.8);
+}
+.highlight-red_background {
+	background: rgba(253, 235, 236, 1);
+}
+.block-color-default {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray {
+	color: rgba(120, 119, 116, 1);
+	fill: rgba(120, 119, 116, 1);
+}
+.block-color-brown {
+	color: rgba(159, 107, 83, 1);
+	fill: rgba(159, 107, 83, 1);
+}
+.block-color-orange {
+	color: rgba(217, 115, 13, 1);
+	fill: rgba(217, 115, 13, 1);
+}
+.block-color-yellow {
+	color: rgba(203, 145, 47, 1);
+	fill: rgba(203, 145, 47, 1);
+}
+.block-color-teal {
+	color: rgba(68, 131, 97, 1);
+	fill: rgba(68, 131, 97, 1);
+}
+.block-color-blue {
+	color: rgba(51, 126, 169, 1);
+	fill: rgba(51, 126, 169, 1);
+}
+.block-color-purple {
+	color: rgba(144, 101, 176, 1);
+	fill: rgba(144, 101, 176, 1);
+}
+.block-color-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.block-color-red {
+	color: rgba(212, 76, 71, 1);
+	fill: rgba(212, 76, 71, 1);
+}
+.block-color-gray_background {
+	background: rgba(241, 241, 239, 1);
+}
+.block-color-brown_background {
+	background: rgba(244, 238, 238, 1);
+}
+.block-color-orange_background {
+	background: rgba(251, 236, 221, 1);
+}
+.block-color-yellow_background {
+	background: rgba(251, 243, 219, 1);
+}
+.block-color-teal_background {
+	background: rgba(237, 243, 236, 1);
+}
+.block-color-blue_background {
+	background: rgba(231, 243, 248, 1);
+}
+.block-color-purple_background {
+	background: rgba(244, 240, 247, 0.8);
+}
+.block-color-pink_background {
+	background: rgba(249, 238, 243, 0.8);
+}
+.block-color-red_background {
+	background: rgba(253, 235, 236, 1);
+}
+.select-value-color-interactiveBlue { background-color: rgba(35, 131, 226, .07); }
+.select-value-color-pink { background-color: rgba(245, 224, 233, 1); }
+.select-value-color-purple { background-color: rgba(232, 222, 238, 1); }
+.select-value-color-green { background-color: rgba(219, 237, 219, 1); }
+.select-value-color-gray { background-color: rgba(227, 226, 224, 1); }
+.select-value-color-translucentGray { background-color: rgba(255, 255, 255, 0.0375); }
+.select-value-color-orange { background-color: rgba(250, 222, 201, 1); }
+.select-value-color-brown { background-color: rgba(238, 224, 218, 1); }
+.select-value-color-red { background-color: rgba(255, 226, 221, 1); }
+.select-value-color-yellow { background-color: rgba(253, 236, 200, 1); }
+.select-value-color-blue { background-color: rgba(211, 229, 239, 1); }
+.select-value-color-pageGlass { background-color: undefined; }
+.select-value-color-washGlass { background-color: undefined; }
+
+.checkbox {
+	display: inline-flex;
+	vertical-align: text-bottom;
+	width: 16;
+	height: 16;
+	background-size: 16px;
+	margin-left: 2px;
+	margin-right: 5px;
+}
+
+.checkbox-on {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20width%3D%2216%22%20height%3D%2216%22%20fill%3D%22%2358A9D7%22%2F%3E%0A%3Cpath%20d%3D%22M6.71429%2012.2852L14%204.9995L12.7143%203.71436L6.71429%209.71378L3.28571%206.2831L2%207.57092L6.71429%2012.2852Z%22%20fill%3D%22white%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+
+.checkbox-off {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20x%3D%220.75%22%20y%3D%220.75%22%20width%3D%2214.5%22%20height%3D%2214.5%22%20fill%3D%22white%22%20stroke%3D%22%2336352F%22%20stroke-width%3D%221.5%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+	
+</style></head><body><article id="a53ee072-0e3f-45c8-a7ab-dd5c45603326" class="page sans"><header><img class="page-cover-image" src="https://www.notion.so/images/page-cover/rijksmuseum_rembrandt_1642.jpg" style="object-position:center 100%"/><div class="page-header-icon page-header-icon-with-cover"><img class="icon" src="Alignment/PinkLab_logo.png"/></div><h1 class="page-title"><a href="https://nbviewer.org/gist/QianjiangHu/0f10005502b79f578f8bd48666df1c75"><span style="white-space:pre">Alignment and mapping workflow</span></a></h1><p class="page-description"></p></header><div class="page-body"><nav id="1fafe4b5-a7a5-41d1-826b-03a0d725fdb9" class="block-color-gray table_of_contents"><div class="table_of_contents-item table_of_contents-indent-0"><a class="table_of_contents-link" href="#e94ef56a-0ae6-4ca2-9063-1e0430174040"><span style="white-space:pre">1. Prepare your data</span></a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#d387759c-220e-454f-a988-381081fce3ba"><span style="white-space:pre">1.1 download files to from your service agent</span></a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#8c9d6bdf-911f-4a9e-89f3-a4d32eb0761f"><span style="white-space:pre">1.2 upload data to Pitt CRC server</span></a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#affca97d-35b2-4290-82fb-4a1cf75e48eb"><span style="white-space:pre">1.3 check md5sum</span></a></div><div class="table_of_contents-item table_of_contents-indent-0"><a class="table_of_contents-link" href="#f16535a6-6c46-465d-b51d-3f693fd174a7"><span style="white-space:pre">2. Know more your samples</span></a></div><div class="table_of_contents-item table_of_contents-indent-0"><a class="table_of_contents-link" href="#4c7a3ef1-2c38-428b-9b28-bf5134b67c0e"><span style="white-space:pre">3. QC</span></a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#85ee901f-07b4-41b0-b889-e0defbe02e7d"><span style="white-space:pre">3.1 </span><strong><strong><span style="white-space:pre">Run FastQC</span></strong></strong></a></div><div class="table_of_contents-item table_of_contents-indent-2"><a class="table_of_contents-link" href="#f6d47830-f9cc-4e94-9fed-443ca940f80a"><span style="white-space:pre">a. Move to FastQC folder under /Jobs and open fastqc.job using vim editor.</span></a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#0d50283b-5b40-41fc-9770-0addfeb8a768"><span style="white-space:pre">3.2 Run MultiQC</span></a></div><div class="table_of_contents-item table_of_contents-indent-2"><a class="table_of_contents-link" href="#8cacd927-30b1-4a25-9682-d9a11bd7e3ca"><span style="white-space:pre">3.2.1 Move to the FastQC resultes folder</span></a></div><div class="table_of_contents-item table_of_contents-indent-2"><a class="table_of_contents-link" href="#1cbf1bc5-c099-4e04-a45d-61fcf76ee842"><span style="white-space:pre">3.2.2 load the MultiQC module on HTC</span></a></div><div class="table_of_contents-item table_of_contents-indent-2"><a class="table_of_contents-link" href="#be318b01-6087-4ad8-a364-a86b66365768"><span style="white-space:pre">3.2.3 Run multiqc on the above FastQX files to summarize the resultes.</span></a></div><div class="table_of_contents-item table_of_contents-indent-0"><a class="table_of_contents-link" href="#c8c179d2-b335-4525-93da-0930e9141d5a"><span style="white-space:pre">4. Run Cutadapt</span></a></div><div class="table_of_contents-item table_of_contents-indent-0"><a class="table_of_contents-link" href="#75b6ca67-ffda-46c1-8e0b-f21200ce6948"><span style="white-space:pre">5. QC after cutadapt</span></a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#e7c7885e-f646-451c-bfd4-81f5334a6634"><span style="white-space:pre">5.1 Run fastq_screen</span></a></div><div class="table_of_contents-item table_of_contents-indent-2"><a class="table_of_contents-link" href="#18a63d03-d649-43d3-a4e4-e2e66f91d482"><span style="white-space:pre">5.1.1 edit fastq_screen.jon</span></a></div><div class="table_of_contents-item table_of_contents-indent-2"><a class="table_of_contents-link" href="#bfe89bb1-698d-424b-a499-00455fca88b3"><span style="white-space:pre">5.1.2 edit fastq_screen.conf to add aligner and database</span></a></div><div class="table_of_contents-item table_of_contents-indent-2"><a class="table_of_contents-link" href="#c89c756f-e012-4f8b-9670-ad9235181ac8"><span style="white-space:pre">5.1.3 submit job</span></a></div><div class="table_of_contents-item table_of_contents-indent-2"><a class="table_of_contents-link" href="#94392483-2aaa-48ee-a4cc-503346910296"><span style="white-space:pre">5.1.4 download the report from HTC cluster to local</span></a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#624b6f70-2957-4b31-a688-523af952f494"><span style="white-space:pre">5.2 Run FastQC</span></a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#ba56439b-8aed-4ea5-a87b-14e88aa9192f"><span style="white-space:pre">5.3 Run MultiQC</span></a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#36e297bd-d4b4-4c4f-93af-0ca500fdf25b"><span style="white-space:pre">5.4 download the report to local</span></a></div><div class="table_of_contents-item table_of_contents-indent-0"><a class="table_of_contents-link" href="#e75e08bc-8182-4ce9-b494-c34aa6e98114"><span style="white-space:pre">6. Run Hisat2</span></a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#474f5c89-ae1c-4203-a38f-e6767036a134"><span style="white-space:pre">6.1 Build Index</span></a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#be27a6a2-9932-486a-93bf-2661ebaac7c8"><span style="white-space:pre">6.2 run Hisat2</span></a></div><div class="table_of_contents-item table_of_contents-indent-0"><a class="table_of_contents-link" href="#32bab0f2-88ff-4530-9c21-d6042c33b86e"><span style="white-space:pre">7. Run HTseq</span></a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#73ce35f8-f43a-46a0-a6bd-3c9b32237535"><span style="white-space:pre">7.1 submit the HTseq job</span></a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#b35709f4-c310-4431-a7b0-51dedd2460ca"><span style="white-space:pre">7.2 check results</span></a></div><div class="table_of_contents-item table_of_contents-indent-0"><a class="table_of_contents-link" href="#6fc2ab85-42a7-4538-8e55-cbac7720d341"><span style="white-space:pre">8. download counts files to local MBP</span></a></div></nav><h1 id="e94ef56a-0ae6-4ca2-9063-1e0430174040" class=""><span style="white-space:pre">1. Prepare your data</span></h1><h3 id="d387759c-220e-454f-a988-381081fce3ba" class=""><span style="white-space:pre">1.1 download files to from your service agent</span></h3><pre id="e26264ac-555e-4d69-9807-8bc48cdab718" class="code"><code>(base) qianjianghu@QJ-Ubuntu:/media/qianjianghu/Udata/DataAnaDriver/RNA_seq/Mareike$ wget -r -np -nH -R *.html -c --user webreader --password m-sbs2+78=AN1sa http://xena.lechnerlab.de:3080/bertrams/NexusDNA_GSK/Bulk-RNA%20sequencing_03032023/</code></pre><h3 id="8c9d6bdf-911f-4a9e-89f3-a4d32eb0761f" class=""><span style="white-space:pre">1.2 upload data to Pitt CRC server</span></h3><pre id="800e4ae1-97c8-4133-a936-bf54afcf97cc" class="code"><code># create folders in Pitt CRC server
+[huqj@login0b ~]$ cd /bgfs/mkoenigshoff/huqj/DataAnalysis/rna_seq/ML_mouse_PCLS
+[huqj@login0b ML_mouse_PCLS]$
+[huqj@login0b ML_mouse_PCLS]$ mkdir Counts  Data  Jobs  Mapping  QC
+[huqj@login0b ML_mouse_PCLS]$ ls
+Counts  Data  Jobs  Mapping  QC
+# upload the data to Pitt CRC server
+# from local Ubuntu terminal
+(base) qianjianghu@QJ-Ubuntu:/media/qianjianghu/Udata/DataAnaDriver/RNA_seq/Mareike/Mareike_mouse_PCLS$ scp -r ./ huqj@htc.crc.pitt.edu:/bgfs/mkoenigshoff/huqj/DataAnalysis/rna_seq/ML_mouse_PCLS/Data/raw/</code></pre><p id="8c128713-9e06-415b-9b4f-8b70672af3b4" class="">
+</p><h3 id="affca97d-35b2-4290-82fb-4a1cf75e48eb" class=""><span style="white-space:pre">1.3 check md5sum</span></h3><pre id="fe7ec800-1e72-452f-9ca9-5728a1c0062a" class="code"><code>[huqj@login0b raw]$ grep -f  Mouse_PCLS.txt md5sums.txt | md5sum -c
+./Sample_23L000907/23L000907_S5_L002_R2_001.fastq.gz: OK
+./Sample_23L000907/23L000907_S5_L002_R1_001.fastq.gz: OK
+./Sample_23L000907/23L000907_S5_L001_R1_001.fastq.gz: OK
+./Sample_23L000907/23L000907_S5_L001_R2_001.fastq.gz: OK
+./Sample_23L000914/23L000914_S12_L002_R1_001.fastq.gz: OK
+./Sample_23L000914/23L000914_S12_L001_R2_001.fastq.gz: OK
+./Sample_23L000905/23L000905_S3_L001_R1_001.fastq.gz: OK
+./Sample_23L000914/23L000914_S12_L001_R1_001.fastq.gz: OK
+./Sample_23L000913/23L000913_S11_L001_R2_001.fastq.gz: OK
+./Sample_23L000905/23L000905_S3_L002_R1_001.fastq.gz: OK
+./Sample_23L000905/23L000905_S3_L001_R2_001.fastq.gz: OK
+./Sample_23L000905/23L000905_S3_L002_R2_001.fastq.gz: OK
+./Sample_23L000914/23L000914_S12_L002_R2_001.fastq.gz: OK
+./Sample_23L000913/23L000913_S11_L002_R2_001.fastq.gz: OK
+./Sample_23L000909/23L000909_S7_L001_R1_001.fastq.gz: OK
+./Sample_23L000913/23L000913_S11_L001_R1_001.fastq.gz: OK
+./Sample_23L000909/23L000909_S7_L001_R2_001.fastq.gz: OK
+./Sample_23L000913/23L000913_S11_L002_R1_001.fastq.gz: OK
+./Sample_23L000909/23L000909_S7_L002_R2_001.fastq.gz: OK
+./Sample_23L000909/23L000909_S7_L002_R1_001.fastq.gz: OK
+./Sample_23L000920/23L000920_S18_L001_R2_001.fastq.gz: OK
+./Sample_23L000920/23L000920_S18_L002_R1_001.fastq.gz: OK
+./Sample_23L000920/23L000920_S18_L001_R1_001.fastq.gz: OK
+./Sample_23L000920/23L000920_S18_L002_R2_001.fastq.gz: OK
+./Sample_23L000903/23L000903_S1_L001_R1_001.fastq.gz: OK
+./Sample_23L000903/23L000903_S1_L002_R1_001.fastq.gz: OK
+./Sample_23L000903/23L000903_S1_L002_R2_001.fastq.gz: OK
+./Sample_23L000904/23L000904_S2_L002_R2_001.fastq.gz: OK
+./Sample_23L000911/23L000911_S9_L002_R1_001.fastq.gz: OK
+./Sample_23L000910/23L000910_S8_L002_R1_001.fastq.gz: OK
+./Sample_23L000903/23L000903_S1_L001_R2_001.fastq.gz: OK
+./Sample_23L000904/23L000904_S2_L001_R2_001.fastq.gz: OK
+./Sample_23L000910/23L000910_S8_L002_R2_001.fastq.gz: OK
+./Sample_23L000911/23L000911_S9_L002_R2_001.fastq.gz: OK
+./Sample_23L000911/23L000911_S9_L001_R1_001.fastq.gz: OK
+./Sample_23L000904/23L000904_S2_L002_R1_001.fastq.gz: OK
+./Sample_23L000904/23L000904_S2_L001_R1_001.fastq.gz: OK
+./Sample_23L000910/23L000910_S8_L001_R2_001.fastq.gz: OK
+./Sample_23L000910/23L000910_S8_L001_R1_001.fastq.gz: OK
+./Sample_23L000911/23L000911_S9_L001_R2_001.fastq.gz: OK
+./Sample_23L000908/23L000908_S6_L002_R1_001.fastq.gz: OK
+./Sample_23L000919/23L000919_S17_L002_R2_001.fastq.gz: OK
+./Sample_23L000919/23L000919_S17_L001_R1_001.fastq.gz: OK
+./Sample_23L000908/23L000908_S6_L002_R2_001.fastq.gz: OK
+./Sample_23L000908/23L000908_S6_L001_R1_001.fastq.gz: OK
+./Sample_23L000908/23L000908_S6_L001_R2_001.fastq.gz: OK
+./Sample_23L000912/23L000912_S10_L002_R1_001.fastq.gz: OK
+./Sample_23L000919/23L000919_S17_L002_R1_001.fastq.gz: OK
+./Sample_23L000912/23L000912_S10_L001_R2_001.fastq.gz: OK
+./Sample_23L000906/23L000906_S4_L001_R1_001.fastq.gz: OK
+./Sample_23L000906/23L000906_S4_L002_R2_001.fastq.gz: OK
+./Sample_23L000906/23L000906_S4_L001_R2_001.fastq.gz: OK
+./Sample_23L000906/23L000906_S4_L002_R1_001.fastq.gz: OK
+./Sample_23L000919/23L000919_S17_L001_R2_001.fastq.gz: OK
+./Sample_23L000912/23L000912_S10_L001_R1_001.fastq.gz: OK
+./Sample_23L000912/23L000912_S10_L002_R2_001.fastq.gz: OK</code></pre><h1 id="f16535a6-6c46-465d-b51d-3f693fd174a7" class=""><span style="white-space:pre">2. Know more your samples</span></h1><blockquote id="333bc0a2-ec4f-453d-ba98-5f2cac472262" class=""><span style="white-space:pre">How the Library preparation was done, including library preparation kit, adapters, purification</span></blockquote><blockquote id="c43d46b3-a0c8-42b0-ad4e-3195116e6b1a" class=""><span style="white-space:pre">sequencing platform,  Sequencing length, depth, aimed reads,Paired-end or single-end sequencing reads, strand-specific or non-strand-specific</span></blockquote><h1 id="4c7a3ef1-2c38-428b-9b28-bf5134b67c0e" class=""><span style="white-space:pre">3. QC</span></h1><h2 id="85ee901f-07b4-41b0-b889-e0defbe02e7d" class=""><span style="white-space:pre">3.1 </span><strong><strong><span style="white-space:pre">Run FastQC</span></strong></strong></h2><h3 id="f6d47830-f9cc-4e94-9fed-443ca940f80a" class=""><span style="white-space:pre">a. Move to FastQC folder under /Jobs and open fastqc.job using vim editor.</span></h3><pre id="56058ccd-e483-4eb7-a9f4-28d3547fe63f" class="code"><code>[huqj@login0b]$ cd /bgfs/mkoenigshoff/huqj/DataAnalysis/rna_seq/ML_mouse_PCLS/Jobs/FastQC
+[huqj@login0b FastQC]$ vim fastqc.job</code></pre><pre id="0b0455e3-9567-4cfa-aa4d-2214ef2e85c6" class="code"><code>#!/bin/bash
+#SBATCH -J fastqc
+#SBATCH -c 12
+#SBATCH -t 2:00:00
+#SBATCH -o OUT/fastqc-%A_%a.out
+#SBATCH --array=0-13 # job array index
+#SBATCH --mail-type=END,FAIL
+#SBATCH --mail-user=huqj@pitt.edu
+###########
+
+####### set-up fastqc
+module load fastqc/0.11.7
+
+set -x
+
+################
+
+project=/bgfs/mkoenigshoff/huqj/DataAnalysis/rna_seq/ML_mouse_PCLS
+
+names=($(cat $project/Data/raw/Mouse_PCLS.txt))
+echo ${names[${SLURM_ARRAY_TASK_ID}]}
+sample=${names[${SLURM_ARRAY_TASK_ID}]}
+
+fastq=$project/Data/merged_fastq
+out=$project/QC/FastQC/Raw
+
+#################
+
+mkdir -p $out
+
+########
+
+fastqc -o $out $fastq/${sample}_1.fastq.gz
+fastqc -o $out $fastq/${sample}_2.fastq.gz</code></pre><p id="bc34adfe-ef88-444e-95c5-1e7e23d6afbd" class=""><span style="white-space:pre">check report</span></p><pre id="721c21fb-5dff-4c24-9934-3db16bec4088" class="code"><code>[huqj@login0b OUT]$ cd /bgfs/mkoenigshoff/huqj/DataAnalysis/rna_seq/ML_mouse_PCLS/Jobs/FastQC/OUT
+[huqj@login0b OUT]$ grep &quot;Analysis complete for&quot; *.out
+fastqc-1938004_0.out:Analysis complete for 23L000903_1.fastq.gz
+fastqc-1938004_0.out:Analysis complete for 23L000903_2.fastq.gz
+fastqc-1938004_10.out:Analysis complete for 23L000913_1.fastq.gz
+fastqc-1938004_10.out:Analysis complete for 23L000913_2.fastq.gz
+fastqc-1938004_11.out:Analysis complete for 23L000914_1.fastq.gz
+fastqc-1938004_11.out:Analysis complete for 23L000914_2.fastq.gz
+fastqc-1938004_12.out:Analysis complete for 23L000919_1.fastq.gz
+fastqc-1938004_12.out:Analysis complete for 23L000919_2.fastq.gz
+fastqc-1938004_13.out:Analysis complete for 23L000920_1.fastq.gz
+fastqc-1938004_13.out:Analysis complete for 23L000920_2.fastq.gz
+fastqc-1938004_1.out:Analysis complete for 23L000904_1.fastq.gz
+fastqc-1938004_1.out:Analysis complete for 23L000904_2.fastq.gz
+fastqc-1938004_2.out:Analysis complete for 23L000905_1.fastq.gz
+fastqc-1938004_2.out:Analysis complete for 23L000905_2.fastq.gz
+fastqc-1938004_3.out:Analysis complete for 23L000906_1.fastq.gz
+fastqc-1938004_3.out:Analysis complete for 23L000906_2.fastq.gz
+fastqc-1938004_4.out:Analysis complete for 23L000907_1.fastq.gz
+fastqc-1938004_4.out:Analysis complete for 23L000907_2.fastq.gz
+fastqc-1938004_5.out:Analysis complete for 23L000908_1.fastq.gz
+fastqc-1938004_5.out:Analysis complete for 23L000908_2.fastq.gz
+fastqc-1938004_6.out:Analysis complete for 23L000909_1.fastq.gz
+fastqc-1938004_6.out:Analysis complete for 23L000909_2.fastq.gz
+fastqc-1938004_7.out:Analysis complete for 23L000910_1.fastq.gz
+fastqc-1938004_7.out:Analysis complete for 23L000910_2.fastq.gz
+fastqc-1938004_8.out:Analysis complete for 23L000911_1.fastq.gz
+fastqc-1938004_8.out:Analysis complete for 23L000911_2.fastq.gz
+fastqc-1938004_9.out:Analysis complete for 23L000912_1.fastq.gz
+fastqc-1938004_9.out:Analysis complete for 23L000912_2.fastq.gz</code></pre><h2 id="0d50283b-5b40-41fc-9770-0addfeb8a768" class=""><span style="white-space:pre">3.2 Run MultiQC</span></h2><h3 id="8cacd927-30b1-4a25-9682-d9a11bd7e3ca" class=""><span style="white-space:pre">3.2.1 Move to the FastQC resultes folder</span></h3><pre id="85d283ab-1db3-4033-a664-d249b1c53587" class="code"><code>[huqj@login0b OUT]$ cd /bgfs/mkoenigshoff/huqj/DataAnalysis/rna_seq/ML_mouse_PCLS/QC/FastQC/Raw/
+[huqj@login0b Raw]$ ls
+23L000903_1_fastqc.html  23L000906_1_fastqc.html  23L000909_1_fastqc.html  23L000912_1_fastqc.html  23L000919_1_fastqc.html
+23L000903_1_fastqc.zip   23L000906_1_fastqc.zip   23L000909_1_fastqc.zip   23L000912_1_fastqc.zip   23L000919_1_fastqc.zip
+23L000903_2_fastqc.html  23L000906_2_fastqc.html  23L000909_2_fastqc.html  23L000912_2_fastqc.html  23L000919_2_fastqc.html
+23L000903_2_fastqc.zip   23L000906_2_fastqc.zip   23L000909_2_fastqc.zip   23L000912_2_fastqc.zip   23L000919_2_fastqc.zip
+23L000904_1_fastqc.html  23L000907_1_fastqc.html  23L000910_1_fastqc.html  23L000913_1_fastqc.html  23L000920_1_fastqc.html
+23L000904_1_fastqc.zip   23L000907_1_fastqc.zip   23L000910_1_fastqc.zip   23L000913_1_fastqc.zip   23L000920_1_fastqc.zip
+23L000904_2_fastqc.html  23L000907_2_fastqc.html  23L000910_2_fastqc.html  23L000913_2_fastqc.html  23L000920_2_fastqc.html
+23L000904_2_fastqc.zip   23L000907_2_fastqc.zip   23L000910_2_fastqc.zip   23L000913_2_fastqc.zip   23L000920_2_fastqc.zip
+23L000905_1_fastqc.html  23L000908_1_fastqc.html  23L000911_1_fastqc.html  23L000914_1_fastqc.html
+23L000905_1_fastqc.zip   23L000908_1_fastqc.zip   23L000911_1_fastqc.zip   23L000914_1_fastqc.zip
+23L000905_2_fastqc.html  23L000908_2_fastqc.html  23L000911_2_fastqc.html  23L000914_2_fastqc.html
+23L000905_2_fastqc.zip   23L000908_2_fastqc.zip   23L000911_2_fastqc.zip   23L000914_2_fastqc.zip</code></pre><h3 id="1cbf1bc5-c099-4e04-a45d-61fcf76ee842" class=""><span style="white-space:pre">3.2.2 load the MultiQC module on HTC</span></h3><pre id="bd8edee2-b9ab-4a16-a530-07f33de2f991" class="code"><code>[huqj@login0b Raw]$ module spider multiqc
+
+----------------------------------------------------------------------------
+  multiqc:
+----------------------------------------------------------------------------
+    Description:
+      Aggregate results from bioinformatics analyses across many samples
+      into a single report.
+
+     Versions:
+        multiqc/1.7
+        multiqc/1.8
+        multiqc/1.10.1
+        multiqc/1.12
+        multiqc/1.13
+
+----------------------------------------------------------------------------
+  For detailed information about a specific &quot;multiqc&quot; module (including how to load the modules) use the module&#x27;s full name.
+  For example:
+
+     $ module spider multiqc/1.8
+----------------------------------------------------------------------------
+
+[huqj@login0b Raw]$ module load multiqc/1.12
+[huqj@login0b Raw]$</code></pre><h3 id="be318b01-6087-4ad8-a364-a86b66365768" class=""><span style="white-space:pre">3.2.3 Run multiqc on the above FastQX files to summarize the resultes.</span></h3><pre id="f1539147-e9e6-4fa1-9a79-5c1a585f0d37" class="code"><code>[huqj@login0b Raw]$ multiqc *.zip
+
+  /// MultiQC 🔍 | v1.12
+
+|           multiqc | MultiQC Version v1.14 now available!
+|           multiqc | Search path : /bgfs/mkoenigshoff/huqj/DataAnalysis/rna_seq/ML_mouse_PCLS/QC/FastQC/Raw/23L000903_1_fastqc.zip
+|           multiqc | Search path : /bgfs/mkoenigshoff/huqj/DataAnalysis/rna_seq/ML_mouse_PCLS/QC/FastQC/Raw/23L000903_2_fastqc.zip
+|           multiqc | Search path : /bgfs/mkoenigshoff/huqj/DataAnalysis/rna_seq/ML_mouse_PCLS/QC/FastQC/Raw/23L000904_1_fastqc.zip
+|           multiqc | Search path : /bgfs/mkoenigshoff/huqj/DataAnalysis/rna_seq/ML_mouse_PCLS/QC/FastQC/Raw/23L000904_2_fastqc.zip
+|           multiqc | Search path : /bgfs/mkoenigshoff/huqj/DataAnalysis/rna_seq/ML_mouse_PCLS/QC/FastQC/Raw/23L000905_1_fastqc.zip
+|           multiqc | Search path : /bgfs/mkoenigshoff/huqj/DataAnalysis/rna_seq/ML_mouse_PCLS/QC/FastQC/Raw/23L000905_2_fastqc.zip
+|           multiqc | Search path : /bgfs/mkoenigshoff/huqj/DataAnalysis/rna_seq/ML_mouse_PCLS/QC/FastQC/Raw/23L000906_1_fastqc.zip
+|           multiqc | Search path : /bgfs/mkoenigshoff/huqj/DataAnalysis/rna_seq/ML_mouse_PCLS/QC/FastQC/Raw/23L000906_2_fastqc.zip
+|           multiqc | Search path : /bgfs/mkoenigshoff/huqj/DataAnalysis/rna_seq/ML_mouse_PCLS/QC/FastQC/Raw/23L000907_1_fastqc.zip
+|           multiqc | Search path : /bgfs/mkoenigshoff/huqj/DataAnalysis/rna_seq/ML_mouse_PCLS/QC/FastQC/Raw/23L000907_2_fastqc.zip
+|           multiqc | Search path : /bgfs/mkoenigshoff/huqj/DataAnalysis/rna_seq/ML_mouse_PCLS/QC/FastQC/Raw/23L000908_1_fastqc.zip
+|           multiqc | Search path : /bgfs/mkoenigshoff/huqj/DataAnalysis/rna_seq/ML_mouse_PCLS/QC/FastQC/Raw/23L000908_2_fastqc.zip
+|           multiqc | Search path : /bgfs/mkoenigshoff/huqj/DataAnalysis/rna_seq/ML_mouse_PCLS/QC/FastQC/Raw/23L000909_1_fastqc.zip
+|           multiqc | Search path : /bgfs/mkoenigshoff/huqj/DataAnalysis/rna_seq/ML_mouse_PCLS/QC/FastQC/Raw/23L000909_2_fastqc.zip
+|           multiqc | Search path : /bgfs/mkoenigshoff/huqj/DataAnalysis/rna_seq/ML_mouse_PCLS/QC/FastQC/Raw/23L000910_1_fastqc.zip
+|           multiqc | Search path : /bgfs/mkoenigshoff/huqj/DataAnalysis/rna_seq/ML_mouse_PCLS/QC/FastQC/Raw/23L000910_2_fastqc.zip
+|           multiqc | Search path : /bgfs/mkoenigshoff/huqj/DataAnalysis/rna_seq/ML_mouse_PCLS/QC/FastQC/Raw/23L000911_1_fastqc.zip
+|           multiqc | Search path : /bgfs/mkoenigshoff/huqj/DataAnalysis/rna_seq/ML_mouse_PCLS/QC/FastQC/Raw/23L000911_2_fastqc.zip
+|           multiqc | Search path : /bgfs/mkoenigshoff/huqj/DataAnalysis/rna_seq/ML_mouse_PCLS/QC/FastQC/Raw/23L000912_1_fastqc.zip
+|           multiqc | Search path : /bgfs/mkoenigshoff/huqj/DataAnalysis/rna_seq/ML_mouse_PCLS/QC/FastQC/Raw/23L000912_2_fastqc.zip
+|           multiqc | Search path : /bgfs/mkoenigshoff/huqj/DataAnalysis/rna_seq/ML_mouse_PCLS/QC/FastQC/Raw/23L000913_1_fastqc.zip
+|           multiqc | Search path : /bgfs/mkoenigshoff/huqj/DataAnalysis/rna_seq/ML_mouse_PCLS/QC/FastQC/Raw/23L000913_2_fastqc.zip
+|           multiqc | Search path : /bgfs/mkoenigshoff/huqj/DataAnalysis/rna_seq/ML_mouse_PCLS/QC/FastQC/Raw/23L000914_1_fastqc.zip
+|           multiqc | Search path : /bgfs/mkoenigshoff/huqj/DataAnalysis/rna_seq/ML_mouse_PCLS/QC/FastQC/Raw/23L000914_2_fastqc.zip
+|           multiqc | Search path : /bgfs/mkoenigshoff/huqj/DataAnalysis/rna_seq/ML_mouse_PCLS/QC/FastQC/Raw/23L000919_1_fastqc.zip
+|           multiqc | Search path : /bgfs/mkoenigshoff/huqj/DataAnalysis/rna_seq/ML_mouse_PCLS/QC/FastQC/Raw/23L000919_2_fastqc.zip
+|           multiqc | Search path : /bgfs/mkoenigshoff/huqj/DataAnalysis/rna_seq/ML_mouse_PCLS/QC/FastQC/Raw/23L000920_1_fastqc.zip
+|           multiqc | Search path : /bgfs/mkoenigshoff/huqj/DataAnalysis/rna_seq/ML_mouse_PCLS/QC/FastQC/Raw/23L000920_2_fastqc.zip
+|         searching | ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 100% 28/28  
+|            fastqc | Found 28 reports
+|           multiqc | Compressing plot data
+|           multiqc | Report      : multiqc_report.html
+|           multiqc | Data        : multiqc_data
+|           multiqc | MultiQC complete
+[huqj@login0b Raw]$ ^C
+[huqj@login0b Raw]$ ls
+23L000903_1_fastqc.html  23L000906_1_fastqc.html  23L000909_1_fastqc.html  23L000912_1_fastqc.html  23L000919_1_fastqc.html
+23L000903_1_fastqc.zip   23L000906_1_fastqc.zip   23L000909_1_fastqc.zip   23L000912_1_fastqc.zip   23L000919_1_fastqc.zip
+23L000903_2_fastqc.html  23L000906_2_fastqc.html  23L000909_2_fastqc.html  23L000912_2_fastqc.html  23L000919_2_fastqc.html
+23L000903_2_fastqc.zip   23L000906_2_fastqc.zip   23L000909_2_fastqc.zip   23L000912_2_fastqc.zip   23L000919_2_fastqc.zip
+23L000904_1_fastqc.html  23L000907_1_fastqc.html  23L000910_1_fastqc.html  23L000913_1_fastqc.html  23L000920_1_fastqc.html
+23L000904_1_fastqc.zip   23L000907_1_fastqc.zip   23L000910_1_fastqc.zip   23L000913_1_fastqc.zip   23L000920_1_fastqc.zip
+23L000904_2_fastqc.html  23L000907_2_fastqc.html  23L000910_2_fastqc.html  23L000913_2_fastqc.html  23L000920_2_fastqc.html
+23L000904_2_fastqc.zip   23L000907_2_fastqc.zip   23L000910_2_fastqc.zip   23L000913_2_fastqc.zip   23L000920_2_fastqc.zip
+23L000905_1_fastqc.html  23L000908_1_fastqc.html  23L000911_1_fastqc.html  23L000914_1_fastqc.html  multiqc_data
+23L000905_1_fastqc.zip   23L000908_1_fastqc.zip   23L000911_1_fastqc.zip   23L000914_1_fastqc.zip   multiqc_report.html
+23L000905_2_fastqc.html  23L000908_2_fastqc.html  23L000911_2_fastqc.html  23L000914_2_fastqc.html
+23L000905_2_fastqc.zip   23L000908_2_fastqc.zip   23L000911_2_fastqc.zip   23L000914_2_fastqc.zip</code></pre><h1 id="c8c179d2-b335-4525-93da-0930e9141d5a" class=""><span style="white-space:pre">4. Run Cutadapt</span></h1><pre id="785544ac-1def-4d53-a037-220deb14804d" class="code"><code>[huqj@login0b ~]$ cd /bgfs/mkoenigshoff/huqj/DataAnalysis/rna_seq/ML_mouse_PCLS/Jobs/Cutadapt
+[huqj@login0b Cutadapt]$ ls
+cutadapt.job  OUT
+[huqj@login0b Cutadapt]$ vim cutadapt.job
+[huqj@login0b Cutadapt]$ sbatch cutadapt.job</code></pre><pre id="fead5656-0a44-4635-8b63-aca96899259f" class="code"><code>#! /bin/bash
+#SBATCH -N 1
+#SBATCH -J cutadapt
+#SBATCH -c 2
+#SBATCH -t 2:00:00
+#SBATCH -o OUT/cutadapt-%A_%a.out
+#SBATCH --array=0-13 # job array index
+#SBATCH --mail-type=ALL
+#SBATCH --mail-user=huqj@pitt.edu
+########################################
+
+## Cutadapt set-up
+module purge
+module load cutadapt/2.10
+
+set -x
+#########################
+
+project=/bgfs/mkoenigshoff/huqj/DataAnalysis/rna_seq/ML_mouse_PCLS
+
+names=($(cat $project/Data/raw/Mouse_PCLS.txt))
+echo ${names[${SLURM_ARRAY_TASK_ID}]}
+sample=${names[${SLURM_ARRAY_TASK_ID}]}
+
+fastq=$project/Data/merged_fastq
+out=$project/Data/Cutadapt
+
+
+##########################
+
+
+mkdir -p $out
+
+cutadapt -m 50 -q 15 \
+   -a CTGTCTCTTATA \
+   -A CTGTCTCTTATA \
+   -u 5 \
+   -U 5 \
+   --pair-filter=any \
+   -o $out/${sample}_1.cutadapt.fastq.gz \
+   -p $out/${sample}_2.cutadapt.fastq.gz \
+    $fastq/${sample}_1.fastq.gz $fastq/${sample}_2.fastq.gz</code></pre><p id="40679159-11c8-4a14-97f7-e99ab6b47890" class=""><span style="white-space:pre">check report
+</span></p><pre id="21cf31a2-a1fa-4abc-9091-e57815020e2d" class="code"><code>
+[huqj@login0b OUT]$ grep &#x27;Total written (filtered)&#x27; *
+cutadapt-1938038_0.out:Total written (filtered):  5,737,433,977 bp (92.6%)
+cutadapt-1938038_10.out:Total written (filtered):  6,503,310,479 bp (91.7%)
+cutadapt-1938038_11.out:Total written (filtered):  5,726,695,218 bp (91.6%)
+cutadapt-1938038_12.out:Total written (filtered):  5,273,527,593 bp (92.5%)
+cutadapt-1938038_13.out:Total written (filtered):  5,565,266,902 bp (92.6%)
+cutadapt-1938038_1.out:Total written (filtered):  5,531,526,492 bp (91.8%)
+cutadapt-1938038_2.out:Total written (filtered):  5,597,951,508 bp (92.3%)
+cutadapt-1938038_3.out:Total written (filtered):  5,887,894,091 bp (91.9%)
+cutadapt-1938038_4.out:Total written (filtered):  4,839,106,610 bp (92.6%)
+cutadapt-1938038_5.out:Total written (filtered):  5,631,820,340 bp (92.7%)
+cutadapt-1938038_6.out:Total written (filtered):  6,610,218,044 bp (92.7%)
+cutadapt-1938038_7.out:Total written (filtered):  5,979,813,844 bp (92.8%)
+cutadapt-1938038_8.out:Total written (filtered):  6,135,924,682 bp (92.5%)
+cutadapt-1938038_9.out:Total written (filtered):  5,743,278,028 bp (92.7%)</code></pre><h1 id="75b6ca67-ffda-46c1-8e0b-f21200ce6948" class=""><span style="white-space:pre">5. QC after cutadapt</span></h1><h2 id="e7c7885e-f646-451c-bfd4-81f5334a6634" class=""><span style="white-space:pre">5.1 Run fastq_screen</span></h2><h3 id="18a63d03-d649-43d3-a4e4-e2e66f91d482" class=""><span style="white-space:pre">5.1.1 edit fastq_screen.jon</span></h3><pre id="3e4da6e9-78f7-448b-a397-48aeb38be5af" class="code"><code>[huqj@login0b fastq_screen]$ cd /bgfs/mkoenigshoff/huqj/DataAnalysis/rna_seq/ML_mouse_PCLS/Jobs/fastq_screen
+[huqj@login0b fastq_screen]$ vim fastq_screen.job</code></pre><pre id="91337fa7-3598-4d71-939a-fc321b661763" class="code"><code>#!/bin/bash
+#
+#SBATCH --job-name=fastq_screen
+#SBATCH -N 1
+#SBATCH --cpus-per-task=2 # Request that ncpus be allocated per process.
+#SBATCH -t 1-00:00 # Runtime in D-HH:MM
+#SBATCH -o OUT/fastq_screen-%A_%a.out
+#SBATCH --mail-type=ALL
+#SBATCH --mail-user=huqj@pitt.edu
+
+module load bowtie2/2.4.5
+module load fastq_screen/0.13.0
+
+
+project=/bgfs/mkoenigshoff/huqj/DataAnalysis/rna_seq/ML_mouse_PCLS
+files=$project/Data/Cutadapt
+outfile=$project/QC/fastq_screen
+confile=$project/Jobs/fastq_screen/fastq_screen.conf
+
+fastq_screen --conf $confile $files/*cutadapt.fastq.gz --outdir $outfile</code></pre><h3 id="bfe89bb1-698d-424b-a499-00455fca88b3" class=""><span style="white-space:pre">5.1.2 edit fastq_screen.conf to add aligner and database</span></h3><pre id="ba0accd9-b015-47da-9632-953751c46407" class="code"><code>[huqj@login0b fastq_screen]$ vim fastq_screen.conf</code></pre><pre id="abb2e834-0a8c-464b-bee8-d82e34c5112c" class="code"><code># This is an example configuration file for FastQ Screen
+
+############################
+## Bowtie, Bowtie 2 or BWA #
+############################
+## If the Bowtie, Bowtie 2 or BWA binary is not in your PATH, you can set
+## this value to tell the program where to find your chosen aligner.  Uncomment
+## the relevant line below and set the appropriate location.  Please note,
+## this path should INCLUDE the executable filename.
+
+#BOWTIE /usr/local/bin/bowtie/bowtie
+BOWTIE2 /ihome/crc/install/bowtie2/bowtie2-2.4.5-linux-x86_64/bowtie2
+#BWA /usr/local/bwa/bwa
+
+
+
+############################################
+## Bismark (for bisulfite sequencing only) #
+############################################
+## If the Bismark binary is not in your PATH then you can set this value to
+## tell the program where to find it.  Uncomment the line below and set the
+## appropriate location. Please note, this path should INCLUDE the executable
+## filename.
+
+#BISMARK        /usr/local/bin/bismark/bismark
+
+
+
+############
+## Threads #
+############
+## Genome aligners can be made to run across multiple CPU cores to speed up
+## searches.  Set this value to the number of cores you want for mapping reads.
+
+THREADS         8
+
+
+
+##############
+## DATABASES #
+##############
+## This section enables you to configure multiple genomes databases (aligner index
+## files) to search against in your screen.  For each genome you need to provide a
+## database name (which can&#x27;t contain spaces) and the location of the aligner index
+## files.
+##
+## The path to the index files SHOULD INCLUDE THE BASENAME of the index, e.g:
+## /data/public/Genomes/Human_Bowtie/GRCh37/Homo_sapiens.GRCh37
+## Thus, the index files (Homo_sapiens.GRCh37.1.bt2, Homo_sapiens.GRCh37.2.bt2, etc.)
+## are found in a folder named &#x27;GRCh37&#x27;.
+##
+## If, for example, the Bowtie, Bowtie2 and BWA indices of a given genome reside in
+## the SAME FOLDER, a SINLGE path may be provided to ALL the of indices.  The index
+## used will be the one compatible with the chosen aligner (as specified using the
+## --aligner flag).
+##
+## The entries shown below are only suggested examples, you can add as many DATABASE
+## sections as required, and you can comment out or remove as many of the existing
+## entries as desired.  We suggest including genomes and sequences that may be sources
+## of contamination either because they where run on your sequencer previously, or may
+## have contaminated your sample during the library preparation step.
+##
+## Human - sequences available from
+## ftp://ftp.ensembl.org/pub/current/fasta/homo_sapiens/dna/
+DATABASE        Human   /bgfs/mkoenigshoff/huqj/DataAnalysis/rna_seq/Refs/fastq_screen_database/Human/GRCh38_noalt_as/GRCh38_noalt_as
+##
+## Mouse - sequence available from
+## ftp://ftp.ensembl.org/pub/current/fasta/mus_musculus/dna/
+DATABASE        Mouse   /bgfs/mkoenigshoff/huqj/DataAnalysis/rna_seq/Refs/fastq_screen_database/Mouse/GRCm39/GRCm39
+##
+## Ecoli- sequence available from EMBL accession U00096.2
+#DATABASE       Ecoli   /data/public/Genomes/Ecoli/Ecoli
+##
+## PhiX - sequence available from Refseq accession NC_001422.1
+#DATABASE       PhiX    /data/public/Genomes/PhiX/phi_plus_SNPs
+##
+## Adapters - sequence derived from the FastQC contaminats file found at: www.bioinformatics.babraham.ac.uk/projects/fastqc
+#DATABASE       Adapters        /data/public/Genomes/Contaminants/Contaminants
+##
+## Vector - Sequence taken from the UniVec database
+## http://www.ncbi.nlm.nih.gov/VecScreen/UniVec.html
+#DATABASE       Vectors         /data/public/Genomes/Vectors/Vectors</code></pre><h3 id="c89c756f-e012-4f8b-9670-ad9235181ac8" class=""><span style="white-space:pre">5.1.3 submit job</span></h3><pre id="3d61a70a-097d-4ab9-9441-e7fad5f45b74" class="code"><code>[huqj@login0b fastq_screen]$ sbatch fastq_screen.job</code></pre><h3 id="94392483-2aaa-48ee-a4cc-503346910296" class=""><span style="white-space:pre">5.1.4 download the report from HTC cluster to local</span></h3><pre id="872e6b38-98e8-4e0e-b13d-892854a5095a" class="code"><code>qianjianghu@Qianjiangs-MacBook-Pro: ~
+$ scp -r huqj@htc.crc.pitt.edu:/bgfs/mkoenigshoff/huqj/DataAnalysis/rna_seq/ML_human_PCLS/QC/fastq_screen/ ./Desktop/ML_PCLS
+huqj@htc.crc.pitt.edu&#x27;s password:
+23L000915_1.cutadapt_screen.txt               100%  476     8.4KB/s   00:00
+23L000918_2.cutadapt_screen.txt               100%  474     8.4KB/s   00:00
+23L000922_1.cutadapt_screen.txt               100%  474     6.5KB/s   00:00
+23L000919_1.cutadapt_screen.txt               100%  475    10.0KB/s   00:00
+23L000922_1.cutadapt_screen.html              100% 3281KB   1.4MB/s   00:02
+23L000915_2.cutadapt_screen.html              100% 3281KB   2.6MB/s   00:01
+23L000919_2.cutadapt_screen.txt               100%  475     6.4KB/s   00:00
+23L000917_2.cutadapt_screen.html              100% 3281KB   3.2MB/s   00:01
+23L000919_1.cutadapt_screen.html              100% 3281KB   2.2MB/s   00:01
+23L000915_2.cutadapt_screen.txt               100%  476    10.0KB/s   00:00
+23L000920_1.cutadapt_screen.html              100% 3281KB   1.8MB/s   00:01
+23L000918_1.cutadapt_screen.txt               100%  474     6.3KB/s   00:00
+23L000922_2.cutadapt_screen.txt               100%  474     4.2KB/s   00:00
+23L000921_1.cutadapt_screen.html              100% 3281KB   2.0MB/s   00:01
+23L000918_1.cutadapt_screen.html              100% 3281KB   2.1MB/s   00:01
+23L000916_2.cutadapt_screen.html              100% 3281KB   1.8MB/s   00:01
+23L000917_1.cutadapt_screen.txt               100%  476     7.1KB/s   00:00
+23L000920_2.cutadapt_screen.html              100% 3281KB   2.3MB/s   00:01
+23L000920_1.cutadapt_screen.txt               100%  473     5.6KB/s   00:00
+23L000921_2.cutadapt_screen.txt               100%  473     3.8KB/s   00:00
+23L000919_2.cutadapt_screen.html              100% 3281KB   2.3MB/s   00:01
+23L000917_1.cutadapt_screen.html              100% 3281KB   2.3MB/s   00:01
+23L000916_2.cutadapt_screen.txt               100%  473     3.3KB/s   00:00
+23L000916_1.cutadapt_screen.html              100% 3281KB   2.3MB/s   00:01
+23L000918_2.cutadapt_screen.html              100% 3281KB   2.1MB/s   00:01
+23L000921_2.cutadapt_screen.html              100% 3281KB   1.9MB/s   00:01
+23L000921_1.cutadapt_screen.txt               100%  473     2.3KB/s   00:00
+23L000916_1.cutadapt_screen.txt               100%  474     4.2KB/s   00:00
+23L000917_2.cutadapt_screen.txt               100%  476     6.7KB/s   00:00
+23L000920_2.cutadapt_screen.txt               100%  474     4.1KB/s   00:00
+23L000915_1.cutadapt_screen.html              100% 3281KB   2.2MB/s   00:01
+23L000922_2.cutadapt_screen.html              100% 3281KB   2.0MB/s   00:01
+(base)</code></pre><h2 id="624b6f70-2957-4b31-a688-523af952f494" class=""><span style="white-space:pre">5.2 Run FastQC</span></h2><pre id="502fa4cb-0972-4db3-8379-6363c568182a" class="code"><code>[huqj@login0b fastq_screen]$ cd /bgfs/mkoenigshoff/huqj/DataAnalysis/rna_seq/ML_mouse_PCLS/Jobs/FastQC/
+[huqj@login0b FastQC]$ vim fastqc_cutadapt.job
+[huqj@login0b FastQC]$ sbatch fastqc_cutadapt.job</code></pre><pre id="0240bebe-c1b0-46cd-ae1b-290dab0d982c" class="code"><code>#!/bin/bash
+#SBATCH -J fastqc_cutadapt
+#SBATCH -c 12
+#SBATCH -t 2:00:00
+#SBATCH -o OUT_cutadapt/fastqc-%A_%a.out
+#SBATCH --array=0-13 # job array index
+#SBATCH --mail-type=ALL
+#SBATCH --mail-user=huqj@pitt.edu
+###########
+
+####### set-up fastqc
+module load fastqc/0.11.7
+
+set -x
+
+
+project=/bgfs/mkoenigshoff/huqj/DataAnalysis/rna_seq/ML_mouse_PCLS
+
+names=($(cat $project/Data/raw/Mouse_PCLS.txt))
+echo ${names[${SLURM_ARRAY_TASK_ID}]}
+sample=${names[${SLURM_ARRAY_TASK_ID}]}
+
+fastq=$project/Data/Cutadapt
+out=$project/QC/FastQC/Cutadapt/
+
+################
+
+mkdir -p $out
+
+fastqc -o $out $fastq/${sample}_*_1.cutadapt.fastq.gz
+fastqc -o $out $fastq/${sample}_*_2.cutadapt.fastq.gz</code></pre><p id="026a6474-fab6-4aa7-9ccc-5f058cd4d6c4" class=""><span style="white-space:pre">check report</span></p><pre id="e5341725-1cbc-4d47-8ebc-9ef9eed5d0be" class="code"><code>[huqj@login0b OUT_cutadapt]$ grep &#x27;Analysis complete for&#x27; *.out
+fastqc-1938131_0.out:Analysis complete for 23L000903_1.cutadapt.fastq.gz
+fastqc-1938131_0.out:Analysis complete for 23L000903_2.cutadapt.fastq.gz
+fastqc-1938131_10.out:Analysis complete for 23L000913_1.cutadapt.fastq.gz
+fastqc-1938131_10.out:Analysis complete for 23L000913_2.cutadapt.fastq.gz
+fastqc-1938131_11.out:Analysis complete for 23L000914_1.cutadapt.fastq.gz
+fastqc-1938131_11.out:Analysis complete for 23L000914_2.cutadapt.fastq.gz
+fastqc-1938131_12.out:Analysis complete for 23L000919_1.cutadapt.fastq.gz
+fastqc-1938131_12.out:Analysis complete for 23L000919_2.cutadapt.fastq.gz
+fastqc-1938131_13.out:Analysis complete for 23L000920_1.cutadapt.fastq.gz
+fastqc-1938131_13.out:Analysis complete for 23L000920_2.cutadapt.fastq.gz
+fastqc-1938131_1.out:Analysis complete for 23L000904_1.cutadapt.fastq.gz
+fastqc-1938131_1.out:Analysis complete for 23L000904_2.cutadapt.fastq.gz
+fastqc-1938131_2.out:Analysis complete for 23L000905_1.cutadapt.fastq.gz
+fastqc-1938131_2.out:Analysis complete for 23L000905_2.cutadapt.fastq.gz
+fastqc-1938131_3.out:Analysis complete for 23L000906_1.cutadapt.fastq.gz
+fastqc-1938131_3.out:Analysis complete for 23L000906_2.cutadapt.fastq.gz
+fastqc-1938131_4.out:Analysis complete for 23L000907_1.cutadapt.fastq.gz
+fastqc-1938131_4.out:Analysis complete for 23L000907_2.cutadapt.fastq.gz
+fastqc-1938131_5.out:Analysis complete for 23L000908_1.cutadapt.fastq.gz
+fastqc-1938131_5.out:Analysis complete for 23L000908_2.cutadapt.fastq.gz
+fastqc-1938131_6.out:Analysis complete for 23L000909_1.cutadapt.fastq.gz
+fastqc-1938131_6.out:Analysis complete for 23L000909_2.cutadapt.fastq.gz
+fastqc-1938131_7.out:Analysis complete for 23L000910_1.cutadapt.fastq.gz
+fastqc-1938131_7.out:Analysis complete for 23L000910_2.cutadapt.fastq.gz
+fastqc-1938131_8.out:Analysis complete for 23L000911_1.cutadapt.fastq.gz
+fastqc-1938131_8.out:Analysis complete for 23L000911_2.cutadapt.fastq.gz
+fastqc-1938131_9.out:Analysis complete for 23L000912_1.cutadapt.fastq.gz
+fastqc-1938131_9.out:Analysis complete for 23L000912_2.cutadapt.fastq.gz</code></pre><h2 id="ba56439b-8aed-4ea5-a87b-14e88aa9192f" class=""><span style="white-space:pre">5.3 Run MultiQC</span></h2><pre id="3c02e98b-51f0-474c-81c3-c7d771f031fe" class="code"><code>[huqj@login0b]$ cd /bgfs/mkoenigshoff/huqj/DataAnalysis/rna_seq/ML_mouse_PCLS/QC/FastQC/Cutadapt</code></pre><pre id="9d4a8f03-5f45-47c7-85af-ada95a657fc6" class="code"><code>[huqj@login0b Cutadapt]$ module load multiqc/1.12
+[huqj@login0b Cutadapt]$ multiqc *.zip
+
+  /// MultiQC 🔍 | v1.12
+
+|           multiqc | MultiQC Version v1.14 now available!
+|           multiqc | Search path : /bgfs/mkoenigshoff/huqj/DataAnalysis/rna_seq/ML_mouse_PCLS/QC/FastQC/Cutadapt/23L000903_1.cutadapt_fastqc.zip
+|           multiqc | Search path : /bgfs/mkoenigshoff/huqj/DataAnalysis/rna_seq/ML_mouse_PCLS/QC/FastQC/Cutadapt/23L000903_2.cutadapt_fastqc.zip
+|           multiqc | Search path : /bgfs/mkoenigshoff/huqj/DataAnalysis/rna_seq/ML_mouse_PCLS/QC/FastQC/Cutadapt/23L000904_1.cutadapt_fastqc.zip
+|           multiqc | Search path : /bgfs/mkoenigshoff/huqj/DataAnalysis/rna_seq/ML_mouse_PCLS/QC/FastQC/Cutadapt/23L000904_2.cutadapt_fastqc.zip
+|           multiqc | Search path : /bgfs/mkoenigshoff/huqj/DataAnalysis/rna_seq/ML_mouse_PCLS/QC/FastQC/Cutadapt/23L000905_1.cutadapt_fastqc.zip
+|           multiqc | Search path : /bgfs/mkoenigshoff/huqj/DataAnalysis/rna_seq/ML_mouse_PCLS/QC/FastQC/Cutadapt/23L000905_2.cutadapt_fastqc.zip
+|           multiqc | Search path : /bgfs/mkoenigshoff/huqj/DataAnalysis/rna_seq/ML_mouse_PCLS/QC/FastQC/Cutadapt/23L000906_1.cutadapt_fastqc.zip
+|           multiqc | Search path : /bgfs/mkoenigshoff/huqj/DataAnalysis/rna_seq/ML_mouse_PCLS/QC/FastQC/Cutadapt/23L000906_2.cutadapt_fastqc.zip
+|           multiqc | Search path : /bgfs/mkoenigshoff/huqj/DataAnalysis/rna_seq/ML_mouse_PCLS/QC/FastQC/Cutadapt/23L000907_1.cutadapt_fastqc.zip
+|           multiqc | Search path : /bgfs/mkoenigshoff/huqj/DataAnalysis/rna_seq/ML_mouse_PCLS/QC/FastQC/Cutadapt/23L000907_2.cutadapt_fastqc.zip
+|           multiqc | Search path : /bgfs/mkoenigshoff/huqj/DataAnalysis/rna_seq/ML_mouse_PCLS/QC/FastQC/Cutadapt/23L000908_1.cutadapt_fastqc.zip
+|           multiqc | Search path : /bgfs/mkoenigshoff/huqj/DataAnalysis/rna_seq/ML_mouse_PCLS/QC/FastQC/Cutadapt/23L000908_2.cutadapt_fastqc.zip
+|           multiqc | Search path : /bgfs/mkoenigshoff/huqj/DataAnalysis/rna_seq/ML_mouse_PCLS/QC/FastQC/Cutadapt/23L000909_1.cutadapt_fastqc.zip
+|           multiqc | Search path : /bgfs/mkoenigshoff/huqj/DataAnalysis/rna_seq/ML_mouse_PCLS/QC/FastQC/Cutadapt/23L000909_2.cutadapt_fastqc.zip
+|           multiqc | Search path : /bgfs/mkoenigshoff/huqj/DataAnalysis/rna_seq/ML_mouse_PCLS/QC/FastQC/Cutadapt/23L000910_1.cutadapt_fastqc.zip
+|           multiqc | Search path : /bgfs/mkoenigshoff/huqj/DataAnalysis/rna_seq/ML_mouse_PCLS/QC/FastQC/Cutadapt/23L000910_2.cutadapt_fastqc.zip
+|           multiqc | Search path : /bgfs/mkoenigshoff/huqj/DataAnalysis/rna_seq/ML_mouse_PCLS/QC/FastQC/Cutadapt/23L000911_1.cutadapt_fastqc.zip
+|           multiqc | Search path : /bgfs/mkoenigshoff/huqj/DataAnalysis/rna_seq/ML_mouse_PCLS/QC/FastQC/Cutadapt/23L000911_2.cutadapt_fastqc.zip
+|           multiqc | Search path : /bgfs/mkoenigshoff/huqj/DataAnalysis/rna_seq/ML_mouse_PCLS/QC/FastQC/Cutadapt/23L000912_1.cutadapt_fastqc.zip
+|           multiqc | Search path : /bgfs/mkoenigshoff/huqj/DataAnalysis/rna_seq/ML_mouse_PCLS/QC/FastQC/Cutadapt/23L000912_2.cutadapt_fastqc.zip
+|           multiqc | Search path : /bgfs/mkoenigshoff/huqj/DataAnalysis/rna_seq/ML_mouse_PCLS/QC/FastQC/Cutadapt/23L000913_1.cutadapt_fastqc.zip
+|           multiqc | Search path : /bgfs/mkoenigshoff/huqj/DataAnalysis/rna_seq/ML_mouse_PCLS/QC/FastQC/Cutadapt/23L000913_2.cutadapt_fastqc.zip
+|           multiqc | Search path : /bgfs/mkoenigshoff/huqj/DataAnalysis/rna_seq/ML_mouse_PCLS/QC/FastQC/Cutadapt/23L000914_1.cutadapt_fastqc.zip
+|           multiqc | Search path : /bgfs/mkoenigshoff/huqj/DataAnalysis/rna_seq/ML_mouse_PCLS/QC/FastQC/Cutadapt/23L000914_2.cutadapt_fastqc.zip
+|           multiqc | Search path : /bgfs/mkoenigshoff/huqj/DataAnalysis/rna_seq/ML_mouse_PCLS/QC/FastQC/Cutadapt/23L000919_1.cutadapt_fastqc.zip
+|           multiqc | Search path : /bgfs/mkoenigshoff/huqj/DataAnalysis/rna_seq/ML_mouse_PCLS/QC/FastQC/Cutadapt/23L000919_2.cutadapt_fastqc.zip
+|           multiqc | Search path : /bgfs/mkoenigshoff/huqj/DataAnalysis/rna_seq/ML_mouse_PCLS/QC/FastQC/Cutadapt/23L000920_1.cutadapt_fastqc.zip
+|           multiqc | Search path : /bgfs/mkoenigshoff/huqj/DataAnalysis/rna_seq/ML_mouse_PCLS/QC/FastQC/Cutadapt/23L000920_2.cutadapt_fastqc.zip
+|         searching | ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 100% 28/28
+|            fastqc | Found 28 reports
+|           multiqc | Compressing plot data
+|           multiqc | Report      : multiqc_report.html
+|           multiqc | Data        : multiqc_data
+|           multiqc | MultiQC complete</code></pre><h2 id="36e297bd-d4b4-4c4f-93af-0ca500fdf25b" class=""><span style="white-space:pre">5.4 download the report to local</span></h2><pre id="8974d0a9-2daf-4a77-bcc6-85076a95432f" class="code"><code>qianjianghu@Qianjiangs-MacBook-Pro: ~
+$ scp -r huqj@htc.crc.pitt.edu:/bgfs/mkoenigshoff/huqj/DataAnalysis/rna_seq/ML_mouse_PCLS/QC/ ./Desktop/ML_mouse_PCLS/
+huqj@htc.crc.pitt.edu&#x27;s password:
+23L000910_2.cutadapt_screen.html                           100% 3281KB   1.6MB/s   00:02
+23L000912_1.cutadapt_screen.txt                            100%  472     6.9KB/s   00:00
+23L000909_1.cutadapt_screen.html                           100% 3281KB   2.9MB/s   00:01
+23L000919_2.cutadapt_screen.txt                            100%  475     7.7KB/s   00:00
+23L000907_2.cutadapt_screen.html                           100% 3281KB   3.0MB/s   00:01
+23L000914_1.cutadapt_screen.txt                            100%  473     6.8KB/s   00:00
+23L000913_2.cutadapt_screen.txt                            100%  474     9.3KB/s   00:00
+23L000903_2.cutadapt_screen.txt                            100%  472     7.4KB/s   00:00
+23L000905_2.cutadapt_screen.txt                            100%  476     9.0KB/s   00:00
+23L000908_1.cutadapt_screen.txt                            100%  472     7.5KB/s   00:00
+23L000906_2.cutadapt_screen.html                           100% 3281KB   3.7MB/s   00:00
+23L000903_1.cutadapt_screen.html                           100% 3281KB   4.0MB/s   00:00
+23L000909_2.cutadapt_screen.txt                            100%  474     9.2KB/s   00:00
+23L000908_1.cutadapt_screen.html                           100% 3281KB   3.6MB/s   00:00
+23L000904_1.cutadapt_screen.txt                            100%  472     8.2KB/s   00:00
+23L000911_2.cutadapt_screen.html                           100% 3281KB   3.5MB/s   00:00
+23L000914_1.cutadapt_screen.html                           100% 3281KB   4.0MB/s   00:00
+23L000913_1.cutadapt_screen.txt                            100%  474     9.8KB/s   00:00
+23L000904_2.cutadapt_screen.html                           100% 3281KB   4.3MB/s   00:00
+23L000913_2.cutadapt_screen.html                           100% 3281KB   4.5MB/s   00:00
+23L000919_1.cutadapt_screen.txt                            100%  475    10.1KB/s   00:00
+23L000914_2.cutadapt_screen.txt                            100%  475     6.2KB/s   00:00
+23L000912_2.cutadapt_screen.txt                            100%  472     6.4KB/s   00:00
+23L000909_1.cutadapt_screen.txt                            100%  474     9.3KB/s   00:00
+23L000904_2.cutadapt_screen.txt                            100%  472     7.2KB/s   00:00
+23L000920_2.cutadapt_screen.html                           100% 3281KB   5.8MB/s   00:00
+23L000905_1.cutadapt_screen.txt                            100%  476    12.0KB/s   00:00
+23L000919_2.cutadapt_screen.html                           100% 3281KB   4.4MB/s   00:00
+23L000912_2.cutadapt_screen.html                           100% 3281KB   5.0MB/s   00:00
+23L000908_2.cutadapt_screen.txt                            100%  472     4.7KB/s   00:00
+23L000905_2.cutadapt_screen.html                           100% 3281KB   5.7MB/s   00:00
+23L000903_1.cutadapt_screen.txt                            100%  472    10.4KB/s   00:00
+23L000910_1.cutadapt_screen.txt                            100%  474     6.1KB/s   00:00
+23L000904_1.cutadapt_screen.html                           100% 3281KB   6.6MB/s   00:00
+23L000911_2.cutadapt_screen.txt                            100%  477     4.3KB/s   00:00
+23L000913_1.cutadapt_screen.html                           100% 3281KB   5.6MB/s   00:00
+23L000920_2.cutadapt_screen.txt                            100%  474     6.5KB/s   00:00
+23L000919_1.cutadapt_screen.html                           100% 3281KB   5.0MB/s   00:00
+23L000912_1.cutadapt_screen.html                           100% 3281KB   4.0MB/s   00:00
+23L000907_2.cutadapt_screen.txt                            100%  473     9.5KB/s   00:00
+23L000905_1.cutadapt_screen.html                           100% 3281KB   4.4MB/s   00:00
+23L000920_1.cutadapt_screen.html                           100% 3281KB   4.6MB/s   00:00
+23L000906_1.cutadapt_screen.txt                            100%  471     8.0KB/s   00:00
+23L000920_1.cutadapt_screen.txt                            100%  473     3.9KB/s   00:00
+23L000911_1.cutadapt_screen.txt                            100%  474     7.8KB/s   00:00
+23L000910_2.cutadapt_screen.txt                            100%  475     3.7KB/s   00:00
+23L000910_1.cutadapt_screen.html                           100% 3281KB   4.9MB/s   00:00
+23L000907_1.cutadapt_screen.html                           100% 3281KB   5.2MB/s   00:00
+23L000909_2.cutadapt_screen.html                           100% 3281KB   4.3MB/s   00:00
+23L000903_2.cutadapt_screen.html                           100% 3281KB   3.4MB/s   00:00
+23L000908_2.cutadapt_screen.html                           100% 3281KB   4.0MB/s   00:00
+23L000906_2.cutadapt_screen.txt                            100%  472     9.3KB/s   00:00
+23L000906_1.cutadapt_screen.html                           100% 3281KB   3.3MB/s   00:00
+23L000914_2.cutadapt_screen.html                           100% 3281KB   2.8MB/s   00:01
+23L000911_1.cutadapt_screen.html                           100% 3281KB   2.7MB/s   00:01
+23L000907_1.cutadapt_screen.txt                            100%  472     3.9KB/s   00:00
+23L000919_1.cutadapt_fastqc.zip                            100%  707KB   2.6MB/s   00:00
+23L000914_2.cutadapt_fastqc.zip                            100%  703KB   2.4MB/s   00:00
+23L000912_2.cutadapt_fastqc.zip                            100%  706KB   2.7MB/s   00:00
+23L000913_1.cutadapt_fastqc.zip                            100%  704KB   3.4MB/s   00:00
+23L000910_1.cutadapt_fastqc.html                           100%  238KB   1.2MB/s   00:00
+23L000909_2.cutadapt_fastqc.html                           100%  239KB   1.2MB/s   00:00
+23L000907_1.cutadapt_fastqc.html                           100%  244KB   1.0MB/s   00:00
+23L000905_1.cutadapt_fastqc.zip                            100%  705KB   2.4MB/s   00:00
+23L000906_1.cutadapt_fastqc.html                           100%  238KB   1.7MB/s   00:00
+23L000908_2.cutadapt_fastqc.zip                            100%  704KB   1.9MB/s   00:00
+23L000903_2.cutadapt_fastqc.html                           100%  241KB   1.3MB/s   00:00
+23L000908_2.cutadapt_fastqc.html                           100%  238KB   1.7MB/s   00:00
+23L000903_1.cutadapt_fastqc.zip                            100%  711KB   1.9MB/s   00:00
+23L000911_1.cutadapt_fastqc.html                           100%  244KB   1.4MB/s   00:00
+23L000914_2.cutadapt_fastqc.html                           100%  238KB   1.4MB/s   00:00
+23L000909_1.cutadapt_fastqc.zip                            100%  707KB   2.0MB/s   00:00
+23L000904_2.cutadapt_fastqc.zip                            100%  717KB   2.5MB/s   00:00
+23L000913_2.cutadapt_fastqc.zip                            100%  705KB   2.6MB/s   00:00
+23L000912_1.cutadapt_fastqc.zip                            100%  712KB   2.2MB/s   00:00
+23L000904_1.cutadapt_fastqc.html                           100%  246KB   2.0MB/s   00:00
+23L000919_2.cutadapt_fastqc.zip                            100%  707KB   2.1MB/s   00:00
+23L000913_1.cutadapt_fastqc.html                           100%  238KB   1.5MB/s   00:00
+23L000914_1.cutadapt_fastqc.zip                            100%  704KB   2.5MB/s   00:00
+23L000919_1.cutadapt_fastqc.html                           100%  240KB   1.7MB/s   00:00
+23L000912_1.cutadapt_fastqc.html                           100%  245KB   1.7MB/s   00:00
+23L000909_2.cutadapt_fastqc.zip                            100%  704KB   2.8MB/s   00:00
+23L000904_1.cutadapt_fastqc.zip                            100%  717KB   3.1MB/s   00:00
+23L000905_1.cutadapt_fastqc.html                           100%  238KB   1.7MB/s   00:00
+23L000903_2.cutadapt_fastqc.zip                            100%  707KB   2.3MB/s   00:00
+23L000905_2.cutadapt_fastqc.zip                            100%  706KB   2.5MB/s   00:00
+23L000920_1.cutadapt_fastqc.html                           100%  245KB   1.6MB/s   00:00
+23L000908_1.cutadapt_fastqc.zip                            100%  705KB   2.6MB/s   00:00
+23L000910_2.cutadapt_fastqc.zip                            100%  705KB   2.2MB/s   00:00
+23L000904_2.cutadapt_fastqc.html                           100%  247KB   1.7MB/s   00:00
+23L000913_2.cutadapt_fastqc.html                           100%  239KB   1.4MB/s   00:00
+23L000920_1.cutadapt_fastqc.zip                            100%  712KB   2.2MB/s   00:00
+23L000911_1.cutadapt_fastqc.zip                            100%  711KB   2.4MB/s   00:00
+23L000907_1.cutadapt_fastqc.zip                            100%  712KB   2.4MB/s   00:00
+23L000920_2.cutadapt_fastqc.html                           100%  239KB   1.8MB/s   00:00
+23L000919_2.cutadapt_fastqc.html                           100%  241KB   1.6MB/s   00:00
+23L000906_2.cutadapt_fastqc.zip                            100%  702KB   2.4MB/s   00:00
+23L000912_2.cutadapt_fastqc.html                           100%  240KB   1.5MB/s   00:00
+multiqc_report.html                                        100% 1466KB   3.0MB/s   00:00
+23L000905_2.cutadapt_fastqc.html                           100%  240KB   1.6MB/s   00:00
+23L000910_2.cutadapt_fastqc.html                           100%  240KB   1.6MB/s   00:00
+23L000911_2.cutadapt_fastqc.zip                            100%  710KB   2.2MB/s   00:00
+multiqc_citations.txt                                      100%   62     1.3KB/s   00:00
+multiqc_data.json                                          100% 1672KB   3.1MB/s   00:00
+multiqc_general_stats.txt                                  100% 2545    47.1KB/s   00:00
+multiqc_fastqc.txt                                         100% 6159   101.2KB/s   00:00
+multiqc_sources.txt                                        100% 4010    81.6KB/s   00:00
+multiqc.log                                                100%   11KB 191.7KB/s   00:00
+23L000907_2.cutadapt_fastqc.html                           100%  243KB   2.2MB/s   00:00
+23L000909_1.cutadapt_fastqc.html                           100%  241KB   1.5MB/s   00:00
+23L000920_2.cutadapt_fastqc.zip                            100%  705KB   2.2MB/s   00:00
+23L000910_1.cutadapt_fastqc.zip                            100%  704KB   2.7MB/s   00:00
+23L000906_1.cutadapt_fastqc.zip                            100%  701KB   2.8MB/s   00:00
+23L000903_1.cutadapt_fastqc.html                           100%  243KB   1.7MB/s   00:00
+23L000908_1.cutadapt_fastqc.html                           100%  239KB   1.6MB/s   00:00
+23L000906_2.cutadapt_fastqc.html                           100%  238KB   1.4MB/s   00:00
+23L000907_2.cutadapt_fastqc.zip                            100%  710KB   2.9MB/s   00:00
+23L000914_1.cutadapt_fastqc.html                           100%  238KB   2.0MB/s   00:00
+23L000911_2.cutadapt_fastqc.html                           100%  243KB   1.6MB/s   00:00
+23L000907_1_fastqc.zip                                     100%  756KB   2.8MB/s   00:00
+23L000920_2_fastqc.html                                    100%  253KB   1.4MB/s   00:00
+23L000909_1_fastqc.html                                    100%  259KB   1.8MB/s   00:00
+23L000906_1_fastqc.zip                                     100%  752KB   2.5MB/s   00:00
+23L000908_2_fastqc.html                                    100%  253KB   2.3MB/s   00:00
+23L000919_2_fastqc.zip                                     100%  745KB   2.9MB/s   00:00
+23L000904_1_fastqc.zip                                     100%  760KB   3.2MB/s   00:00
+23L000905_1_fastqc.zip                                     100%  752KB   2.3MB/s   00:00
+23L000919_2_fastqc.html                                    100%  252KB   1.9MB/s   00:00
+23L000903_1_fastqc.html                                    100%  260KB   2.4MB/s   00:00
+23L000907_2_fastqc.html                                    100%  253KB   2.1MB/s   00:00
+23L000912_1_fastqc.html                                    100%  261KB   1.9MB/s   00:00
+23L000903_1_fastqc.zip                                     100%  757KB   3.6MB/s   00:00
+23L000913_2_fastqc.html                                    100%  251KB   1.6MB/s   00:00
+23L000906_1_fastqc.html                                    100%  255KB   1.9MB/s   00:00
+23L000905_2_fastqc.html                                    100%  250KB   1.2MB/s   00:00
+23L000910_1_fastqc.html                                    100%  257KB   2.0MB/s   00:00
+23L000914_2_fastqc.zip                                     100%  742KB   2.6MB/s   00:00
+23L000909_1_fastqc.zip                                     100%  754KB   3.0MB/s   00:00
+23L000911_2_fastqc.html                                    100%  256KB   1.6MB/s   00:00
+23L000904_1_fastqc.html                                    100%  264KB   2.3MB/s   00:00
+23L000908_1_fastqc.zip                                     100%  754KB   2.9MB/s   00:00
+23L000914_2_fastqc.html                                    100%  250KB   1.8MB/s   00:00
+23L000920_1_fastqc.zip                                     100%  757KB   2.5MB/s   00:00
+23L000913_2_fastqc.zip                                     100%  743KB   2.7MB/s   00:00
+23L000912_2_fastqc.zip                                     100%  748KB   2.7MB/s   00:00
+23L000910_2_fastqc.zip                                     100%  749KB   2.7MB/s   00:00
+multiqc_sources.txt                                        100% 3618    62.7KB/s   00:00
+multiqc_general_stats.txt                                  100% 2213    32.6KB/s   00:00
+multiqc_citations.txt                                      100%   62     1.4KB/s   00:00
+multiqc.log                                                100%   10KB 174.1KB/s   00:00
+multiqc_data.json                                          100% 1710KB   3.2MB/s   00:00
+multiqc_fastqc.txt                                         100% 5578   105.2KB/s   00:00
+23L000911_2_fastqc.zip                                     100%  753KB   3.2MB/s   00:00
+multiqc_report.html                                        100% 1484KB   3.6MB/s   00:00
+23L000903_2_fastqc.zip                                     100%  748KB   2.7MB/s   00:00
+23L000914_1_fastqc.html                                    100%  257KB   1.7MB/s   00:00
+23L000907_2_fastqc.zip                                     100%  748KB   2.8MB/s   00:00
+23L000906_2_fastqc.zip                                     100%  742KB   3.0MB/s   00:00
+23L000911_1_fastqc.html                                    100%  261KB   1.7MB/s   00:00
+23L000904_2_fastqc.html                                    100%  258KB   2.0MB/s   00:00
+23L000904_2_fastqc.zip                                     100%  754KB   3.1MB/s   00:00
+23L000919_1_fastqc.zip                                     100%  755KB   3.3MB/s   00:00
+23L000905_1_fastqc.html                                    100%  257KB   1.8MB/s   00:00
+23L000910_2_fastqc.html                                    100%  255KB   1.5MB/s   00:00
+23L000905_2_fastqc.zip                                     100%  743KB   2.5MB/s   00:00
+23L000913_1_fastqc.html                                    100%  258KB   2.1MB/s   00:00
+23L000906_2_fastqc.html                                    100%  251KB   2.0MB/s   00:00
+23L000913_1_fastqc.zip                                     100%  755KB   2.5MB/s   00:00
+23L000907_1_fastqc.html                                    100%  261KB   1.9MB/s   00:00
+23L000912_2_fastqc.html                                    100%  254KB   1.8MB/s   00:00
+23L000912_1_fastqc.zip                                     100%  757KB   3.1MB/s   00:00
+23L000910_1_fastqc.zip                                     100%  752KB   2.5MB/s   00:00
+23L000903_2_fastqc.html                                    100%  254KB   1.4MB/s   00:00
+23L000911_1_fastqc.zip                                     100%  759KB   2.9MB/s   00:00
+23L000909_2_fastqc.zip                                     100%  745KB   3.1MB/s   00:00
+23L000914_1_fastqc.zip                                     100%  754KB   3.0MB/s   00:00
+23L000908_2_fastqc.zip                                     100%  744KB   3.1MB/s   00:00
+23L000919_1_fastqc.html                                    100%  259KB   1.8MB/s   00:00
+23L000920_1_fastqc.html                                    100%  260KB   1.8MB/s   00:00
+23L000920_2_fastqc.zip                                     100%  748KB   2.9MB/s   00:00
+23L000908_1_fastqc.html                                    100%  257KB   2.1MB/s   00:00
+23L000909_2_fastqc.html                                    100%  251KB   1.6MB/s   00:00
+(base)
+qianjianghu@Qianjiangs-MacBook-Pro: ~
+$</code></pre><h1 id="e75e08bc-8182-4ce9-b494-c34aa6e98114" class=""><span style="white-space:pre">6. Run Hisat2</span></h1><h2 id="474f5c89-ae1c-4203-a38f-e6767036a134" class=""><span style="white-space:pre">6.1 Build Index</span></h2><ul id="1f7a3a39-7a8c-4b04-8dfc-9e67891d1f35" class="toggle"><li><details open=""><summary><span style="white-space:pre">download the genome </span><mark class="highlight-red"><strong><span style="white-space:pre">./</span></strong></mark><mark class="highlight-red"><span style="white-space:pre">Refs/Genome/Mus_musculus/GRCm39_release_108</span></mark></summary><pre id="2313f282-fc2b-4bb0-8fe8-44353040d446" class="code"><code>[huqj@login0b GRCm39_release_108]$ cd /bgfs/mkoenigshoff/huqj/DataAnalysis/rna_seq/Refs/Genome/Mus_musculus/GRCm39_release_108
+[huqj@login0b GRCm39_release_108]$ wget ftp://ftp.ensembl.org/pub/release-108/fasta/mus_musculus/dna/Mus_musculus.GRCm39.dna.primary_assembly.fa.gz
+--2023-04-22 18:26:03--  https://ftp.ensembl.org/pub/release-108/fasta/mus_musculus/dna/Mus_musculus.GRCm39.dna.primary_assembly.fa.gz
+Resolving ftp.ensembl.org (ftp.ensembl.org)... 193.62.193.139
+Connecting to ftp.ensembl.org (ftp.ensembl.org)|193.62.193.139|:443... connected.
+HTTP request sent, awaiting response... 200 OK
+Length: 881211416 (840M) [application/x-gzip]
+Saving to: ‘Mus_musculus.GRCm39.dna.primary_assembly.fa.gz’
+100%[========================================================&gt;] 881,211,416  664KB/s   in 21m 41s
+
+2023-04-22 18:47:45 (662 KB/s) - ‘Mus_musculus.GRCm39.dna.primary_assembly.fa.gz’ saved [881211416/881211416]</code></pre><p id="e4c8e249-a03d-4a99-acb5-0d85a7a4a4af" class="">
+</p></details></li></ul><ul id="6a22fe43-8b15-4e79-b8b7-8e5c5c837c21" class="toggle"><li><details open=""><summary><strong><span style="white-space:pre">Download the Annotation file into</span></strong><mark class="highlight-red"><strong><span style="white-space:pre"> .</span></strong></mark><mark class="highlight-red"><span style="white-space:pre">/Refs/Annotation/Mus_musculus/GRCm39_release_108</span></mark></summary><pre id="e5caa7ce-729c-4da2-a1bd-0b692c417fe5" class="code"><code>[huqj@login0b GRCm39_release_108]$ cd /bgfs/mkoenigshoff/huqj/DataAnalysis/rna_seq/Refs/Annotation/Mus_musculus/GRCm39_release_108
+[huqj@login0b GRCm39_release_108]$ wget ftp://ftp.ensembl.org/pub/release-108/gtf/mus_musculus/Mus_musculus.GRCm39.108.gtf.gz
+--2023-04-22 18:31:51--  ftp://ftp.ensembl.org/pub/release-108/gtf/mus_musculus/Mus_musculus.GRCm39.108.gtf.gz
+						=&gt; ‘Mus_musculus.GRCm39.108.gtf.gz’
+Resolving ftp.ensembl.org (ftp.ensembl.org)... 193.62.193.139
+Connecting to ftp.ensembl.org (ftp.ensembl.org)|193.62.193.139|:21... connected.
+Logging in as anonymous ... Logged in!
+==&gt; SYST ... done.    ==&gt; PWD ... done.
+==&gt; TYPE I ... done.  ==&gt; CWD (1) /pub/release-108/gtf/mus_musculus ... done.
+==&gt; SIZE Mus_musculus.GRCm39.108.gtf.gz ... 32316315
+==&gt; PASV ... done.    ==&gt; RETR Mus_musculus.GRCm39.108.gtf.gz ... done.
+Length: 32316315 (31M) (unauthoritative)
+
+100%[================================================================================================================&gt;] 32,316,315  1.78MB/s   in 22s
+
+2023-01-31 01:04:46 (1.40 MB/s) - ‘Mus_musculus.GRCm39.108.gtf.gz’ saved [32316315]</code></pre></details></li></ul><ul id="1ece2f1c-b1d4-4b1d-ba89-c2f4ab53508a" class="toggle"><li><details open=""><summary><strong><span style="white-space:pre">extract .exon and .ss</span></strong></summary><pre id="515dcffe-6a9e-4c7e-8cfb-0db832d8947d" class="code"><code>[huqj@login0b GRCm39_release_108]$ module load hisat2/2.2.1
+[huqj@login0b GRCm39_release_108]$ gzip -d Mus_musculus.GRCm39.108.gtf.gz
+[huqj@login0b GRCm39_release_108]$ ls
+Mus_musculus.GRCm39.108.gtf
+[huqj@login0b GRCm39_release_108]$ extract_splice_sites.py Mus_musculus.GRCm39.108.gtf &gt; /bgfs/mkoenigshoff/huqj/DataAnalysis/rna_seq/Refs/Index/Hisat2_Index/Mus_musculus/splice_sites/grcm39.ss
+[huqj@login0b GRCm39_release_108]$ extract_exons.py Mus_musculus.GRCm39.108.gtf &gt; /bgfs/mkoenigshoff/huqj/DataAnalysis/rna_seq/Refs/Index/Hisat2_Index/Mus_musculus/exon/grcm39.exon
+</code></pre></details></li></ul><ul id="c1198040-0ffc-47e5-9f0f-881f6e052182" class="toggle"><li><details open=""><summary><span style="white-space:pre">build index</span></summary><pre id="3bb409ee-fd5e-4ead-92d1-b3dffb83eca4" class="code"><code>[huqj@login0b]$ cd /bgfs/mkoenigshoff/huqj/DataAnalysis/rna_seq/Refs/Index/Hisat2_Index/Mus_musculus
+[huqj@login0b Mus_musculus]$ vim hisat2_build.sbatch</code></pre><pre id="73879121-76ec-4b80-96fa-1c1dfdc94700" class="code"><code>#! /bin/bash
+#
+#SBATCH --job-name=hisat2_index_mus
+#SBATCH -N 1 # Ensure that all cores are on one machine
+#SBATCH -t 3-00:00 # Runtime in D-HH:MM
+
+#SBATCH --cpus-per-task=16 # Request that ncpus be allocated per process
+#SBATCH --mem=230g # Memory pool for all cores (see also --mem-per-cpu)
+#SBATCH -o OUT/htseq-%A_%a.out
+#SBATCH --mail-type=ALL
+#SBATCH --mail-user=huqj@pitt.edu
+
+module load hisat2/2.2.1
+
+input=/bgfs/mkoenigshoff/huqj/DataAnalysis/rna_seq/Refs/Index/Hisat2_Index/Mus_musculus
+out=/bgfs/mkoenigshoff/huqj/DataAnalysis/rna_seq/Refs/Index/Hisat2_Index/Mus_musculus/index/GRCm39_release_108
+ref=/bgfs/mkoenigshoff/huqj/DataAnalysis/rna_seq/Refs/Genome/Mus_musculus/GRCm39_release_108
+
+
+hisat2-build -p 16 \
+        --ss $input/splice_sites/grcm39.ss \
+        --exon $input/exon/grcm39.exon \
+        $ref/Mus_musculus.GRCm39.dna.primary_assembly.fa \
+        $out/grcm39_tran</code></pre><pre id="e9cb58e9-2ddd-4be8-a1aa-95fd4ae8c545" class="code"><code>[huqj@login0b Mus_musculus]$ sbatch hisat2_build.sbatch</code></pre><p id="b2484b08-d3ca-4042-8a5c-57868ddb0d90" class=""><span style="white-space:pre">check index</span></p><pre id="077fc167-10e7-43b8-bc96-1ad5087849f6" class="code"><code>[huqj@login0b grcm39_tran]$ cd /bgfs/mkoenigshoff/huqj/DataAnalysis/rna_seq/Refs/Index/Hisat2_Index/Mus_musculus/index/GRCm39_release_108/grcm39_tran
+[huqj@login0b grcm39_tran]$ ll
+total 3758388
+-rw-r--r-- 1 huqj mkoenigshoff 1641097441 Apr 22 22:24 grcm39_tran.1.ht2
+-rw-r--r-- 1 huqj mkoenigshoff  664918148 Apr 22 22:24 grcm39_tran.2.ht2
+-rw-r--r-- 1 huqj mkoenigshoff       3374 Apr 22 21:28 grcm39_tran.3.ht2
+-rw-r--r-- 1 huqj mkoenigshoff  663655446 Apr 22 21:28 grcm39_tran.4.ht2
+-rw-r--r-- 1 huqj mkoenigshoff 1527534119 Apr 22 22:32 grcm39_tran.5.ht2
+-rw-r--r-- 1 huqj mkoenigshoff  676124278 Apr 22 22:32 grcm39_tran.6.ht2
+-rw-r--r-- 1 huqj mkoenigshoff   11437272 Apr 22 21:29 grcm39_tran.7.ht2
+-rw-r--r-- 1 huqj mkoenigshoff    2279891 Apr 22 21:29 grcm39_tran.8.ht2</code></pre><p id="df3f1c64-7d57-4f8f-9fab-1547c4d7a14a" class="">
+</p></details></li></ul><h2 id="be27a6a2-9932-486a-93bf-2661ebaac7c8" class=""><span style="white-space:pre">6.2 run Hisat2</span></h2><pre id="4230f44d-5a54-46d6-8b66-d4adfd26896f" class="code"><code>[huqj@login0b]$ cd /bgfs/mkoenigshoff/huqj/DataAnalysis/rna_seq/ML_mouse_PCLS/Jobs/Hisat2
+[huqj@login0b Hisat2]$ vim hisat2.job</code></pre><p id="73f73a61-d914-4b44-aba4-37aa94afa745" class="">
+</p><pre id="1f49b5ab-061a-463b-a877-953e85163b85" class="code"><code>[huqj@login0b Hisat2]$ sbatch hisat2.job</code></pre><pre id="4f1ebf15-98be-4780-8355-946c9d5f89dd" class="code"><code>#! /bin/bash
+#
+#BATCH -N 1
+#SBATCH -J HISAT2
+#SBATCH -t 2:00:00
+#SBATCH -c 8
+#SBATCH -o OUT/hisat2-%A_%a.out
+#SBATCH --array=0-13 # job array index
+#SBATCH --mail-type=ALL
+#SBATCH --mail-user=huqj@pitt.edu
+#############################
+
+## HISAT2 set-up
+module load gcc/8.2.0
+module load hisat2/2.2.1
+module load samtools/1.9
+
+set -x
+
+################################
+
+project=/bgfs/mkoenigshoff/huqj/DataAnalysis/rna_seq/ML_mouse_PCLS
+
+names=($(cat $project/Data/raw/Mouse_PCLS.txt))
+echo ${names[${SLURM_ARRAY_TASK_ID}]}
+sample=${names[${SLURM_ARRAY_TASK_ID}]}
+
+trimfastq=$project/Data/Cutadapt
+out=$project/Mapping/HISAT2
+out_sort=$project/Mapping/HISAT2_sort
+ref=/bgfs/mkoenigshoff/huqj/DataAnalysis/rna_seq/Refs/Index/Hisat2_Index/Mus_musculus/index/GRCm39_release_108/grcm39_tran/grcm39_tran
+
+####################################
+
+mkdir -p $out
+mkdir -p $out_sort
+
+###################
+
+hisat2 -x $ref \
+        -S $out/${sample}.sam \
+        -p 8 \
+        --dta \
+        -1 $trimfastq/${sample}_1.cutadapt.fastq.gz \
+        -2 $trimfastq/${sample}_2.cutadapt.fastq.gz
+
+samtools view -@ 3 -h -o $out/${sample}.bam $out/${sample}.sam
+samtools sort $out/${sample}.bam -n -o $out_sort/${sample}.sorted.query.bam</code></pre><p id="b6b6738c-1d4b-4665-a251-b849a5bcff9c" class=""><span style="white-space:pre">check alignment results</span></p><pre id="14c8558d-f645-401d-a4b2-561696bc9ecb" class="code"><code>[huqj@login0b Hisat2]$ cd OUT/
+[huqj@login0b OUT]$ ls
+hisat2-1938175_0.out   hisat2-1938175_12.out  hisat2-1938175_2.out  hisat2-1938175_5.out  hisat2-1938175_8.out
+hisat2-1938175_10.out  hisat2-1938175_13.out  hisat2-1938175_3.out  hisat2-1938175_6.out  hisat2-1938175_9.out
+hisat2-1938175_11.out  hisat2-1938175_1.out   hisat2-1938175_4.out  hisat2-1938175_7.out
+[huqj@login0b OUT]$ grep &quot;overall alignment rate&quot; *.out
+hisat2-1938175_0.out:97.05% overall alignment rate
+hisat2-1938175_10.out:97.25% overall alignment rate
+hisat2-1938175_11.out:97.52% overall alignment rate
+hisat2-1938175_12.out:97.04% overall alignment rate
+hisat2-1938175_13.out:97.01% overall alignment rate
+hisat2-1938175_1.out:92.22% overall alignment rate
+hisat2-1938175_2.out:97.09% overall alignment rate
+hisat2-1938175_3.out:97.77% overall alignment rate
+hisat2-1938175_4.out:95.67% overall alignment rate
+hisat2-1938175_5.out:97.53% overall alignment rate
+hisat2-1938175_6.out:97.62% overall alignment rate
+hisat2-1938175_7.out:97.23% overall alignment rate
+hisat2-1938175_8.out:94.78% overall alignment rate
+hisat2-1938175_9.out:97.31% overall alignment rate</code></pre><h1 id="32bab0f2-88ff-4530-9c21-d6042c33b86e" class=""><span style="white-space:pre">7. Run HTseq</span></h1><h3 id="73ce35f8-f43a-46a0-a6bd-3c9b32237535" class=""><span style="white-space:pre">7.1 submit the HTseq job</span></h3><pre id="7a9c091a-7634-44fd-90db-c1670b91588f" class="code"><code>[huqj@login0b]$ cd /bgfs/mkoenigshoff/huqj/DataAnalysis/rna_seq/ML_mouse_PCLS/Jobs/HT-Seq
+[huqj@login0b HT-Seq]$ vim htseq.job</code></pre><pre id="b5b7bb01-e45f-4f4b-9c70-a50dac2f4965" class="code"><code>#! /bin/bash
+#SBATCH -N 1
+#SBATCH -t 1:00:00
+#SBATCH -J htseq
+#SBATCH -c 6
+#SBATCH -o OUT/htseq-%A_%a.out
+#SBATCH --array=0-13 # job array index 
+#SBATCH --mail-type=ALL
+#SBATCH --mail-user=huqj@pitt.edu
+######################################
+
+
+############ htseq set-up
+module load htseq/0.13.5
+
+set -x
+
+###########################
+
+
+project=/bgfs/mkoenigshoff/huqj/DataAnalysis/rna_seq/ML_mouse_PCLS
+
+names=($(cat $project/Data/raw/Mouse_PCLS.txt))
+echo ${names[${SLURM_ARRAY_TASK_ID}]}
+sample=${names[${SLURM_ARRAY_TASK_ID}]}
+#########################################
+BAM=$project/Mapping/HISAT2_sort
+gtf=/bgfs/mkoenigshoff/huqj/DataAnalysis/rna_seq/Refs/Annotation/Mus_musculus/GRCm39_release_108/Mus_musculus.GRCm39.108.gtf
+out=$project/Counts/HT-Seq
+
+#############################
+
+mkdir -p $out
+
+htseq-count -f bam \
+    -r name \
+    -s reverse \  # this is the correct one for this seq data
+    -t exon \
+    -m union \
+    -i gene_id \
+    $BAM/$sample.sorted.query.bam \
+    $gtf &gt; $out/$sample.counts.txt</code></pre><h3 id="b35709f4-c310-4431-a7b0-51dedd2460ca" class=""><span style="white-space:pre">7.2 check results</span></h3><pre id="dba10e0e-d015-43a2-baef-92302b41727f" class="code"><code>[huqj@login0b HT-Seq]$ cat 23L000903.counts.txt | head
+ENSMUSG00000000001	3551
+ENSMUSG00000000003	0
+ENSMUSG00000000028	110
+ENSMUSG00000000031	24
+ENSMUSG00000000037	15
+ENSMUSG00000000049	1
+ENSMUSG00000000056	997
+ENSMUSG00000000058	2324
+ENSMUSG00000000078	7886
+ENSMUSG00000000085	921</code></pre><p id="abdb3954-0c5f-402e-89d9-4aef7fe668aa" class="">
+</p><p id="251aaeb4-a364-4fe3-9b8e-f9fa4554b4f7" class="">
+</p><h1 id="6fc2ab85-42a7-4538-8e55-cbac7720d341" class=""><span style="white-space:pre">8. download counts files to local MBP</span></h1><pre id="32fd78db-740d-4c18-a630-c4198b7cd87e" class="code"><code>qianjianghu@Qianjiangs-MacBook-Pro: ~
+$ scp -r huqj@htc.crc.pitt.edu:/bgfs/mkoenigshoff/huqj/DataAnalysis/rna_seq/ML_mouse_PCLS/Counts/ /Users/qianjianghu/Desktop/ML_mouse_PCLS/
+huqj@htc.crc.pitt.edu&#x27;s password:
+23L000910.counts.txt                          100% 1202KB   3.9MB/s   00:00
+23L000906.counts.txt                          100% 1202KB   2.7MB/s   00:00
+23L000919.counts.txt                          100% 1201KB   3.3MB/s   00:00
+23L000904.counts.txt                          100% 1201KB   3.4MB/s   00:00
+23L000912.counts.txt                          100% 1201KB   4.1MB/s   00:00
+23L000903.counts.txt                          100% 1202KB   3.0MB/s   00:00
+23L000908.counts.txt                          100% 1202KB   4.3MB/s   00:00
+23L000914.counts.txt                          100% 1201KB   4.7MB/s   00:00
+23L000909.counts.txt                          100% 1203KB   4.8MB/s   00:00
+23L000905.counts.txt                          100% 1202KB   4.7MB/s   00:00
+23L000913.counts.txt                          100% 1203KB   6.2MB/s   00:00
+23L000920.counts.txt                          100% 1202KB   4.7MB/s   00:00
+23L000911.counts.txt                          100% 1202KB   3.8MB/s   00:00
+23L000907.counts.txt                          100% 1200KB   4.2MB/s   00:00
+23L000903.txt                                 100%   20MB  14.3MB/s   00:01
+23L000914.txt.summary                         100%  472     5.3KB/s   00:00
+23L000904.txt                                 100%   20MB  20.3MB/s   00:01
+23L000904.txt.summary                         100%  473     5.3KB/s   00:00
+23L000909.txt.summary                         100%  473     7.8KB/s   00:00
+23L000906.txt.summary                         100%  472     7.2KB/s   00:00
+23L000920.txt                                 100%   20MB  14.7MB/s   00:01
+23L000919.txt.summary                         100%  472     6.5KB/s   00:00
+23L000912.txt                                 100%   20MB  19.1MB/s   00:01
+23L000920.txt.summary                         100%  472     5.3KB/s   00:00
+23L000910.txt.summary                         100%  472     3.8KB/s   00:00
+23L000905.txt                                 100%   20MB  20.3MB/s   00:01
+23L000913.txt                                 100%   20MB  20.4MB/s   00:01
+23L000914.txt                                 100%   20MB  18.4MB/s   00:01
+23L000912.txt.summary                         100%  472     7.4KB/s   00:00
+23L000910.txt                                 100%   20MB  16.0MB/s   00:01
+23L000919.txt                                 100%   20MB   9.9MB/s   00:02
+23L000911.txt.summary                         100%  474     3.4KB/s   00:00
+23L000913.txt.summary                         100%  473     4.1KB/s   00:00
+23L000903.txt.summary                         100%  472     3.2KB/s   00:00
+23L000908.txt                                 100%   20MB  11.1MB/s   00:01
+23L000906.txt                                 100%   20MB  12.3MB/s   00:01
+23L000905.txt.summary                         100%  472     8.3KB/s   00:00
+23L000911.txt                                 100%   20MB  12.6MB/s   00:01
+23L000907.txt                                 100%   20MB  10.5MB/s   00:01
+23L000909.txt                                 100%   20MB  13.1MB/s   00:01
+23L000907.txt.summary                         100%  472     4.0KB/s   00:00
+23L000908.txt.summary                         100%  472     3.8KB/s   00:00
+(base)</code></pre><p id="3845a962-5126-4e6d-8d2a-9d53fc241ab5" class="">
+</p><p id="067a9e4a-1bbc-4178-acf3-96ff2d7e3e49" class="">
+</p></div></article></body></html>

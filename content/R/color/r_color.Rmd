@@ -1,0 +1,307 @@
+---
+title: "Elegant Color in R Advanced Graphics"
+date: 2021-02-13
+author: "***Qianjiang Hu***"
+output: 
+  html_document:
+      number_sections: false
+      toc: true
+      toc_depth: 4
+      toc_float:
+        collapsed: true
+        smooth_scroll: true
+---
+
+## **Overview**
+R is a programming language and free software environment for statistical computing and graphics supported by the R Foundation for Statistical Computing. It is also extremely flexible with high perfermance in creating data visualisations. Above all, the color scheme is one of the key elements of a data visualization.
+This post will present colors in basic R and ggplot.
+
+## **Colors in Basic R**
+### Built-in color names
+R has 657 built in color names. That can be listed by `colors()`. 
+```{r}
+colors()[c(1:10)]
+```
+
+Instead of using a color name, color can also be called by Hex code. Hex code define a color as a 6 hexadecimal digit number of the form `#RRGGBB`, in which `RR` is for red, `GG` for Green and `BB` for blue. Two additional characters (with the same scale) can be added to the end to describe transparency (#rrggbbaa). The function `seecol()` in `unikn` package offers a way to view color palettes. You can search a perfect color by an online tool `color picker`. <https://htmlcolorcodes.com/>
+```{r, echo=TRUE, eval=TRUE}
+library('unikn')             # loads the package
+seecol(c('#3338FF','#33FF48','#FF338D','#AC33FF','#FF6033',"#FF000044"))
+```
+### RGB color via `rgb()`
+- Combination of numbers for red, green and blue component
+- Default range between 0 and 1
+- maxColorValue = 255 adjusts the range to the standard notation
+- alpha produces transparent colors
+
+```{r, fig.width=12, fig.height=6, fig.align='center', out.width= '80%'}
+par(mar = c(7,3,2,2))
+barplot(1:5, col =
+          c(rgb(red = 1, green = 0, blue = 0, alpha = 0.5),  # alpha produce the transparent color
+            rgb(red = 1, green = 1, blue = 1), 
+            rgb(red = 0.5, green = 0.5, blue = 0.5), 
+            rgb(0 , 90, 160, maxColorValue = 255),
+            rgb(140, 180, 35, maxColorValue = 255)), 
+        names.arg = 
+          c('rgb(1,0,0)','rgb(1,1,1)','rgb(0.5,0.5,0.5)','rgb(0,90,160)','rgb(140,180,35)'), 
+        las = 2)
+```
+R can translate colors to rgb by `col2rgb()` (It gives interaction for matching colors in other programs)
+```{r}
+col2rgb(c('#FF0000', 'blue'))
+```
+### HCL color
+Package `colorspace` support the mapping HCL(Hue-Chroma-Luminance) color system, a perceptually-based and device-independent color model.
+- `qualitative_hcl()` create colors with same perceptual weight
+- `sequential_hcl()` create colors of decreasing luminance
+- `diverging_hcl()` create transmissions between two colors
+- `palette()` presents pre-specified patterns
+- `n` sets number of steps
+- `h`, `c`, `l`: parameters of color coding alternative
+- use `hcl_palettes(plot = TRUE)` to check all examples
+- `power` determines the speed of change: `power = 1`: linear, `power = 2`: quadratic
+
+```{r, fig.width=8, fig.height=4, fig.align='center', out.width= '80%'}
+library(colorspace)
+col1 <- sequential_hcl(n = 7, palette = "Blues 3")
+col2 <- diverging_hcl(n = 7, palette = "Blue-Red2")
+col3 <- qualitative_hcl(7, palette = "Dark 3")
+seecol(col1)
+seecol(col2)
+seecol(col3)
+```
+Customized color verctors are also available with colorspaceby vector.
+```{r, fig.width=8, fig.height=4, fig.align='center', out.width= '80%'}
+col4 <- sequential_hcl(n = 7, palette = "Blues 3")[c(1,3,5)]
+seecol(col4)
+```
+
+There is also an interactive tool that can be used to obtain a customized palette. To start the tool:
+`colp <- choose_palette()`
+
+### ColorRampPalette
+Another powerful color schemes is ColorRampalette with both `colorRamp()` and `colorRampPalette()` function. With two input colors, both functions can generate an entire spectrum of colors by mixing together different amounts of two colors.
+```{r}
+cr <- colorRamp(c("red", "blue"))
+cr(0)
+``` 
+Any value between 0 and 1, even a sequence of numbers, can be passed to colorRmp.
+
+```{r}
+cr <- colorRamp(c("red", "blue"))
+cr(seq(0,1,len = 8))
+``` 
+The `colorRampPalette()` shares the similar funtion with `colorRamp()`, however the function that it returns gives you a fixed number of colors that interpolate the palette. 
+```{r}
+cr <- colorRampPalette(c("red", "blue"))
+cr(1)
+cr(3)
+``` 
+
+`colorRampPalette(colors = c(.,.), alpha)(n = ...)` build sequential and divering color-schemes based on rgb coding. Same color for start and end with different transparency produce sequential scheme. Two different colors for start and end produces diverging scheme.
+
+```{r, fig.width=8, fig.height=3, fig.align='center', out.width= '80%'}
+par(mfrow = c(1,2))
+barplot(1:6, main = "Diverging", 
+        col = colorRampPalette(colors = c(rgb(0, 0, 1), rgb(0, 1, 0)))(n = 6))
+barplot(1:6, main = "Sequential", 
+        col = colorRampPalette(colors = c(rgb(0, 0, 1, alpha = 1),
+                                          rgb(0, 0, 1, alpha = 0)),
+                               alpha = TRUE)(n = 6))
+```
+
+In addition, `colorRamp()` generates contrast color palette, while `colorRampPalette()` generates a gradient color pallette. 
+
+
+```{r, fig.width=10, fig.height=5, fig.align='center', out.width= '80%'}
+par(mfrow = c(1, 2))
+pc1 <- colorRamp(c("blue", "purple"))
+pc2 <- colorRampPalette(c("blue", "purple"))
+pie(rep(1, 20), labels = "", col = pc1(seq(0, 1, len = 20)), 
+    border = pc1(seq(0, 1, len = 20)), main = "colorRamp")
+pie(rep(1, 20), labels = "", col = pc2(20), border = pc2(20), 
+    main = "colorRampPalette")
+dev.off()
+```
+
+### RColorBrewer
+The function of `brewer.pal()` in `RColorBrewer` package support three type of pallettes: `RColorBrewer`, `Diverging`,`Qualitative`. 
+All of these palettes can be used in conjunction with the `colorRamp()` and `colorRampPalette()`.
+`display.brewer.all()` can show all available color pallettes from `RColorBrewer` package.
+
+
+```{r, fig.width=8, fig.height=8, fig.align='center', out.width= '90%'}
+library(RColorBrewer)
+display.brewer.all()
+```
+
+```{r}
+library(RColorBrewer)
+cols <- brewer.pal(3, "BuGn")
+cols
+```
+
+```{r, fig.width=7, fig.height=5, fig.align='center', out.width= '80%'}
+pal <- colorRampPalette(cols)
+image(volcano, col = pal(20))
+```
+
+### Other Palettes
+There are also some recommended palettes built-in R:
+`cm.colors()`, `topo.colors()`, `terrain.colors()`, `heat.colors()`, `rainbow()`, `gray.colors()`
+
+
+## **Colors in `gglot2`**
+
+Most of the color palettes including `R names` and `Hex code` are still available in `ggplot2`. Customized color vectors are also work in `ggplot2`. Additionally, ggplot2 is compatible with some other color palettes.
+
+### fill vs. col
+`ggplot2` allows to customize the colors thanks to its `fill` and `color` arguments. In general, `fill` give the color with which a geom is filled, whereas `color` define the colors with which a geom is outlined.
+
+```{r, fig.width=7, fig.height=5, fig.align='center', out.width= '80%'}
+library(ggplot2)
+ggplot(data = iris, mapping = aes(x = Sepal.Length, y =Sepal.Width)) +
+  geom_point(col = 'red', fill = 'deepskyblue', shape = 21, size = 5, alpha = 0.7)
+```
+
+### Default colors in ggplot2
+Default colors are defined by `hcl()` with the discipline `hcl(h = (seq(15, 375-360/n, length = n)), c = 100, l = 65)`. Therefore, all colors have the same luminance and chroma.
+Additionally, `show_col()` in packages `scales` offer the other way to check colors.
+```{r, fig.width=7, fig.height=4, fig.align='center'}
+# Visualize the colors depending on the number of categories by
+par(mfrow = c(1,2))
+library(scales)
+show_col(hue_pal() (4))    #please note the space between `hue_pal()` and `n`
+show_col(hue_pal() (6))
+```
+
+### Set a ggplot color by groups 
+(i.e. by a factor variable)
+This is done by mapping a grouping variable (aesthetic) to the color or to the fill arguments. 
+
+```{r, fig.width=7, fig.height=3, fig.align='center', out.width= '80%'}
+library('ggplot2')
+sleep <- as.data.frame(msleep)
+Plot1 <- ggplot(data = sleep, aes(x = vore)) +
+  geom_bar(aes(fill = vore), col = "black") # fill define the aesthetic mapping in which variable `vore` will be filed with color
+Plot1
+```
+
+### Discrete colors
+#### *`scale_fill_hue`*
+Change colors in ggplot2 by `scale_fill_hue` and `scale_color_hue`
+Use grey scale via `scale_fill_grey()`
+`na.value`: Change color of category `NA`
+
+```{r, fig.width=7, fig.height=3, fig.align='center', out.width= '80%'}
+par(mfrow = c(1,2))
+Plot1 +
+  scale_fill_hue(l = 100)
+Plot1 +
+  scale_fill_grey()
+```
+
+#### *`cale_fill_brewer()`*
+`Color brewer` also offer a function to change colors in R: `scale_fill_brewer()` and `scale_color_brewer()`
+Consider missing values via `na.value`, otherwise the category is not displayed.
+To reverse the order of the colors use the argument direction = -1
+
+```{r, fig.width=7, fig.height=3, fig.align='center', out.width= '80%'}
+Plot1 + 
+  scale_fill_brewer('Paired')
+```
+
+Check all colors in `RcolorBrewer` via `RColorBrewer::display.brewer.all(n)`
+
+#### *`scale_fill_manual()`*
+Define discrete colors manually in ggplot2 via `scale_fill_manual()` and `scale_color_manual()`
+Firstly, it is necesary to build either a vector of colors or a vector of categories and colors.
+
+```{r, fig.width=7, fig.height=3, fig.align='center', out.width= '80%'}
+newcol <- c("carni" = "lightblue", "herbi" = "lightgreen", "insecti" = "tomato", "omni" = "purple")
+Plot1 + 
+  scale_fill_manual(values = newcol, na.value = "grey")
+```
+
+Similar with `scale_fill_manual()`, `scale_shape_manual()` giva a way to self-define shapes of categories via a shape vector.
+
+```{r, fig.width=7, fig.height=3, fig.align='center', out.width= '80%'}
+mcol <- c('setosa' = 'lightblue',  'versicolor'= 'lightgreen', 'virginica' = 'tomato')
+mshape <- c('setosa' = 22,  'versicolor'= 23, 'virginica' = 24)
+ggplot(data = iris,  mapping = aes(x = Sepal.Length, y = Sepal.Width)) +
+  geom_point(mapping = aes(fill = Species, shape = Species), size =  4, alpha = 0.75)+
+  scale_fill_manual(values = mcol, na.value = 'grey')+
+  scale_shape_manual(values = mshape, na.value = 9)
+```
+
+### Gradient Colors
+
+When a categrory variable is used to asethetic, discrtete colors are required. Whereas, when a continuouse variable is used for scaling, then a gradient color is necessary.
+
+```{r, fig.width=7, fig.height=4, fig.align='center', out.width= '80%'}
+Plot2 <- ggplot(data = iris,  mapping = aes(x = Sepal.Length, y = Sepal.Width)) +
+  geom_point(mapping = aes(color = Petal.Length, size = Petal.Width),  alpha = 0.7)
+Plot2
+```
+
+* `scale_fill_gradient()` creates a two color gradient (low-high)
+* `scale_fill_gradient2()` creates a three color gradient (low-mid-high, midpoint)
+
+```{r, fig.width=7, fig.height=4, fig.align='center', out.width= '80%'}
+par(mfrow = c(1,2))
+Plot2 + scale_color_gradient(low = 'white', high = 'blue')
+Plot2 + scale_color_gradient2(low = 'blue', mid = 'white',high = 'red', midpoint = 4)
+```
+
+#### ***limits of continuous colors***
+
+The upper and lower end of the gradient color scheme can be changed via the argument `limits`
+• scale_fill_gradient() changes also the color pattern
+• scale_fill_continuous() changes only the limits
+
+```{r, fig.width=7, fig.height=4, fig.align='center', out.width= '80%'}
+par(mfrow = c(1,2))
+Plot2 + scale_color_continuous(limits= c(-2,10))
+Plot2 + scale_color_gradient2(low = 'blue', mid = 'white',high = 'red', midpoint = 4, limits = c(0,9))
+```
+
+### Global default of colors
+`options()` Allow the user to set and examine a variety of global options which affect the way in which R computes and displays its results.
+
+Global adjustment of color pattern via options(), e.g.
+* options(ggplot2.continuous.colour = brewer.pal(8, "Dark2"))
+* options(ggplot2.continuous.fill = brewer.pal(8, "Dark2"))
+* options(ggplot2.discrete.colour = brewer.pal(8, "Dark2"))
+* options(ggplot2.discrete.fill = brewer.pal(8, "Dark2"))
+
+***NOTE***
+Before changing colors globally, save the default via:
+
+```{r}
+opts <- options()
+```
+
+## **Others**
+
+### Color info
+To extract colors (other info as well) of a ggpplot use `ggplot_build()`
+
+```{r}
+ggplot_build(Plot1)$data[[1]]
+```
+
+
+
+
+
+
+## **References:**
+1. <https://htmlcolorcodes.com/>
+2. <https://www.r-graph-gallery.com/ggplot2-color.html>
+3. <https://bookdown.org/rdpeng/exdata/plotting-and-color-in-r.html>
+4. <https://www.nceas.ucsb.edu/sites/default/files/2020-04/colorPaletteCheatsheet.pdf>
+
+
+
+
+
